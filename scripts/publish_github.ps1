@@ -14,8 +14,15 @@ if (-not (Test-Path $Gh)) {
     Expand-Archive -Path $GhZip -DestinationPath $GhDir -Force
 }
 
-& $Gh auth status 2>$null
-if ($LASTEXITCODE -ne 0) {
+$authOk = $false
+try {
+    & $Gh auth status 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) { $authOk = $true }
+} catch {
+    $authOk = $false
+}
+
+if (-not $authOk) {
     Write-Host "GitHub login required. A browser window will open."
     Write-Host "Enter the one-time code shown below at https://github.com/login/device"
     Start-Process "https://github.com/login/device"
@@ -23,8 +30,15 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $desc = "Конструктор тренировочного плана v0.0.2: иерархия, .tplan, демо-мезоцикл, exe, сводка нагрузки"
-& $Gh repo view "RulonOboev28/$RepoName" 2>$null
-if ($LASTEXITCODE -ne 0) {
+$repoExists = $false
+try {
+    & $Gh repo view "RulonOboev28/$RepoName" 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) { $repoExists = $true }
+} catch {
+    $repoExists = $false
+}
+
+if (-not $repoExists) {
     & $Gh repo create $RepoName --public --description $desc --source . --remote origin --push
 } else {
     git push -u origin main --tags
