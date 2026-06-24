@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+# PyInstaller (артефакты), но spec и demo оставляем
+build/*
+!build/training_constructor.spec
+!build/demo/
+!build/demo/**
+dist/
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Временные и служебные файлы
+_*.txt
+*.log
+
+# Локальные черновики (не входят в релиз)
+docs/legal/
+scripts/build_legal_docx.py
+scripts/fill_diary.py
+scripts/fill_practice_report.py
+scripts/format_article_gost.py
+scripts/generate_presentation.py
+scripts/npa_section_content.py
+scripts/generate_demo_mesocycle.py
