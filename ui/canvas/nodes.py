@@ -159,17 +159,19 @@ class ContainerArea(QGraphicsItem):
         path.addRoundedRect(self._rect, 24, 24)
 
         fill = QColor(self._color)
-        fill.setAlpha(40 if self._active else 24)
+        fill.setAlpha(52 if self._active else 24)
         painter.fillPath(path, fill)
 
-        c = self._color
-        border_alpha = 180 if self._active else 90
-        pen = QPen(QColor(c.red(), c.green(), c.blue(), border_alpha),
-                   2.0 if self._active else 1.4, Qt.PenStyle.DashLine)
+        if self._active:
+            pen = QPen(QColor("#ffffff"), 3.0)
+        else:
+            c = self._color
+            pen = QPen(QColor(c.red(), c.green(), c.blue(), 90), 1.4,
+                       Qt.PenStyle.DashLine)
         painter.setPen(pen)
         painter.drawPath(path)
 
-        painter.setPen(QColor(255, 255, 255, 150 if self._active else 110))
+        painter.setPen(QColor(255, 255, 255, 220 if self._active else 110))
         font = QFont("Segoe UI", 13)
         font.setItalic(True)
         font.setBold(self._active)

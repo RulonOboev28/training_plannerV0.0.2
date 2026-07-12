@@ -8,7 +8,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QCheckBox, QComboBox, QFileDialog, QInputDialog, QLabel, QMainWindow,
     QMenu, QMessageBox, QPushButton, QSlider, QSplitter, QStatusBar, QToolBar,
-    QWidget,
+    QVBoxLayout, QWidget,
 )
 
 from core import database, exporting, library_store
@@ -19,6 +19,7 @@ from core.models import (
 )
 from ui.canvas import nodes
 from ui.canvas.viewport import CanvasView
+from ui.panels.calendar_panel import CalendarPanel
 from ui.panels.library_panel import LibraryPanel
 from ui.panels.properties_panel import PropertiesPanel
 
@@ -45,6 +46,7 @@ class MainWindow(QMainWindow):
 
         self.theme = "dark"
         self.canvas = CanvasView()
+        self.calendar = CalendarPanel()
         self.library = LibraryPanel()
         self.properties = PropertiesPanel()
 
@@ -58,9 +60,16 @@ class MainWindow(QMainWindow):
 
     # ──────────────────────────────────────────────────────────────────
     def _build_layout(self) -> None:
+        canvas_wrap = QWidget()
+        canvas_layout = QVBoxLayout(canvas_wrap)
+        canvas_layout.setContentsMargins(0, 0, 0, 0)
+        canvas_layout.setSpacing(0)
+        canvas_layout.addWidget(self.canvas, 1)
+        canvas_layout.addWidget(self.calendar)
+
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.addWidget(self.library)
-        splitter.addWidget(self.canvas)
+        splitter.addWidget(canvas_wrap)
         splitter.addWidget(self.properties)
         splitter.setStretchFactor(1, 1)
         splitter.setSizes([280, 940, 320])
@@ -91,6 +100,8 @@ class MainWindow(QMainWindow):
         tb.addWidget(self._btn("▲ Вверх", self.canvas.go_up))
         self.btn_new_area = self._btn("＋ Область", self.canvas.create_area)
         tb.addWidget(self.btn_new_area)
+        self.btn_calendar = self._btn("📅 Календарь", self._open_calendar)
+        tb.addWidget(self.btn_calendar)
         tb.addSeparator()
 
         self.btn_export = QPushButton("Экспорт ▾")
@@ -169,6 +180,13 @@ class MainWindow(QMainWindow):
         self.canvas.history_changed.connect(self._on_history_changed)
         self.canvas.save_to_library_requested.connect(self._on_save_to_library)
 
+        self.calendar.bind_canvas(self.canvas)
+        self.calendar.day_selected.connect(self._on_calendar_day)
+        self.calendar.date_bound.connect(self._on_calendar_date_bound)
+        self.calendar.bind_failed.connect(self._on_calendar_bind_failed)
+
+        self.properties.bind_canvas(self.canvas)
+
         self.properties.data_changed.connect(self._on_data_changed)
         self.properties.save_to_library.connect(self._on_save_to_library)
 
@@ -195,6 +213,7 @@ class MainWindow(QMainWindow):
         except OSError:
             pass
         self.canvas.set_theme(theme)
+        self.calendar.set_theme(theme)
         self.btn_theme.setText("Тема: Светлая" if theme == "light" else "Тема: Тёмная")
 
     def _toggle_theme(self) -> None:
@@ -232,6 +251,7 @@ class MainWindow(QMainWindow):
         self.canvas.refresh_selected_node()
         self.canvas.commit_state(("edit", getattr(element, "id", None)))
         database.save_autosave(self.canvas.plan)
+        self.canvas.notify_plan_changed()
         self._mark_saved()
 
     def _mark_saved(self) -> None:
@@ -245,6 +265,19 @@ class MainWindow(QMainWindow):
     def _on_request_add(self, element) -> None:
         self.canvas.create_tile(element)
         self.status.showMessage(f"Добавлено: {element.title}")
+
+    def _on_calendar_day(self, on_date) -> None:
+        self.status.showMessage(f"Переход к {on_date.strftime('%d.%m.%Y')}")
+
+    def _on_calendar_date_bound(self, element, on_date) -> None:
+        self.status.showMessage(
+            f"Привязано: {element.title} → {on_date.strftime('%d.%m.%Y')}")
+
+    def _on_calendar_bind_failed(self, message: str) -> None:
+        self.status.showMessage(message)
+
+    def _open_calendar(self) -> None:
+        self.calendar.toggle()
 
     def _on_slider(self, value: int) -> None:
         self.canvas.set_percent(value)

@@ -12,7 +12,11 @@ tile_level — уровень плиток внутри областей (на 1
 from __future__ import annotations
 
 import json
+import math
+from datetime import date
 from typing import Dict, List, Optional, Tuple
+
+from core.calendar_map import build_day_index, parse_plan_start
 
 from PyQt6.QtCore import (
     QEasingCurve, QPointF, QRectF, Qt, QVariantAnimation, pyqtSignal,
@@ -26,7 +30,7 @@ from core.models import (
     level_of, make_element,
 )
 from ui.canvas import nodes
-from ui.canvas.connections import ConnectionItem
+from ui.canvas.connections import AUTO_WRAP_CHANNEL, ConnectionItem
 from ui.canvas.nodes import ContainerArea, TileNode
 
 SCALE_MAX = 1.0
@@ -42,6 +46,12 @@ HEADER = 48.0
 PAD = 40.0
 AREA_GAP = 80.0
 TILE_GAP = 50.0
+
+# Авто-расстановка: вертикальные колонки с увеличенными промежутками под стрелки
+AUTO_COL_MIN = 3
+AUTO_COL_MAX = 8
+AUTO_ROW_GAP = 80.0
+AUTO_COL_GAP = 90.0
 
 BG_COLOR = "#0b0718"
 
@@ -68,6 +78,7 @@ class CanvasView(QGraphicsView):
     node_deselected = pyqtSignal()
     level_changed = pyqtSignal(object)   # area_level (HierarchyLevel)
     zoom_changed = pyqtSignal(int)
+    viewport_changed = pyqtSignal()
     history_changed = pyqtSignal()
     save_to_library_requested = pyqtSignal(object)
 
@@ -115,6 +126,7 @@ class CanvasView(QGraphicsView):
         # Память положения камеры между уровнями.
         self._scope_focus: Dict[Optional[str], str] = {}
         self._pending_focus_id: Optional[str] = None
+        self._pending_highlight_id: Optional[str] = None
         self._focus_requested = False
         self._focus_zoom_in = True
         self._cam_anim: Optional[QVariantAnimation] = None
@@ -127,6 +139,11 @@ class CanvasView(QGraphicsView):
         self._coalesce_key = None
 
         self._scene.selectionChanged.connect(self._on_selection_changed)
+        self.horizontalScrollBar().valueChanged.connect(self._emit_viewport_changed)
+        self.verticalScrollBar().valueChanged.connect(self._emit_viewport_changed)
+
+    def _emit_viewport_changed(self, *_args) -> None:
+        self.viewport_changed.emit()
 
     # ──────────────────────────────────────────────────────────────────
     # Уровни / области
@@ -230,8 +247,10 @@ class CanvasView(QGraphicsView):
         self._apply_scale()
         self._update_scene_rect_from_areas()
         self._apply_pending_focus()
+        self._apply_pending_highlight()
         self.level_changed.emit(self.area_level())
         self.zoom_changed.emit(self.current_percent())
+        self.viewport_changed.emit()
 
     def _auto_layout_children(self, children: List) -> None:
         slot = 0.0
@@ -277,7 +296,7 @@ class CanvasView(QGraphicsView):
         left = origin.x() + min(0.0, min_x) - PAD
         right = origin.x() + max(tw, max_x) + PAD
         top = origin.y() + min(0.0, min_y) - HEADER
-        bottom = origin.y() + max(th, max_y) + PAD
+        bottom = origin.y() + max(th, max_y) + PAD + AUTO_WRAP_CHANNEL
         width = max(_area_min_w(), right - left)
         return QRectF(left, top, width, bottom - top)
 
@@ -524,22 +543,73 @@ class CanvasView(QGraphicsView):
         for area_el in self._areas_list():
             children = get_children(area_el)
             if children:
-                self._grid_arrange(children)
+                ordered, per_col = self._column_arrange(children)
+                self._rebuild_area_sequence(children, ordered, per_col)
                 changed = True
         if not changed:
             return
-        self._relayout_areas()
+        self._render()
         self.commit_state()
         self.notify_plan_changed()
 
-    def _grid_arrange(self, children: List) -> None:
-        ordered = sorted(children, key=lambda c: (c.pos_y, c.pos_x))
-        per_row = 6
-        step_x = nodes.TILE_W + TILE_GAP
-        step_y = nodes.TILE_H + TILE_GAP
+    def _ordered_children(self, children: List) -> List:
+        """Порядок по цепочке связей, иначе по позиции на полотне."""
+        child_ids = {c.id for c in children}
+        incoming: Dict[str, int] = {c.id: 0 for c in children}
+        for child in children:
+            for conn in child.connections:
+                if conn.target_id in child_ids:
+                    incoming[conn.target_id] = incoming.get(conn.target_id, 0) + 1
+
+        heads = [c for c in children if incoming[c.id] == 0]
+        if len(heads) == 1:
+            ordered: List = []
+            current = heads[0]
+            visited: set = set()
+            while current is not None and current.id not in visited:
+                visited.add(current.id)
+                ordered.append(current)
+                next_id = None
+                for conn in current.connections:
+                    if conn.target_id in child_ids:
+                        next_id = conn.target_id
+                        break
+                current = self.plan.get(next_id) if next_id else None
+            if len(ordered) == len(children):
+                return ordered
+
+        return sorted(children, key=lambda c: (c.pos_y, c.pos_x))
+
+    def _column_arrange(self, children: List) -> Tuple[List, int]:
+        """Расставляет плитки колонками сверху вниз, затем следующая колонка."""
+        ordered = self._ordered_children(children)
+        per_col = max(AUTO_COL_MIN, min(
+            AUTO_COL_MAX, math.ceil(math.sqrt(len(ordered)))))
+        step_x = nodes.TILE_W + AUTO_COL_GAP
+        step_y = nodes.TILE_H + AUTO_ROW_GAP
         for i, c in enumerate(ordered):
-            c.pos_x = (i % per_row) * step_x
-            c.pos_y = (i // per_row) * step_y
+            col = i // per_col
+            row = i % per_col
+            c.pos_x = col * step_x
+            c.pos_y = row * step_y
+        min_y = min(c.pos_y for c in ordered)
+        if min_y > 0:
+            for c in ordered:
+                c.pos_y -= min_y
+        return ordered, per_col
+
+    def _rebuild_area_sequence(self, children: List, ordered: List,
+                               per_col: int) -> None:
+        """Однонаправленная цепочка связей по порядку расстановки."""
+        child_ids = {c.id for c in children}
+        for child in children:
+            child.connections = [
+                c for c in child.connections if c.target_id not in child_ids
+            ]
+        for i in range(len(ordered) - 1):
+            same_col = (i // per_col) == ((i + 1) // per_col)
+            kind = "auto_down" if same_col else "auto_wrap"
+            self.plan.add_connection(ordered[i].id, ordered[i + 1].id, kind=kind)
 
     # ──────────────────────────────────────────────────────────────────
     # Размер плиток
@@ -581,12 +651,14 @@ class CanvasView(QGraphicsView):
         if self.plan.get(area_id) is None:
             return False
         self._capture_focus()
-        self.scope_id = area_id
         remembered = self._scope_focus.get(area_id)
-        self.active_area_id = remembered
+        highlight_id = remembered or area_id
+        self.scope_id = area_id
+        self._prepare_active_area(highlight_id, area_id)
         self.tile_scale = SCALE_MAX
         self._focus_zoom_in = True
-        self._request_focus(remembered)
+        self._request_focus(highlight_id)
+        self._pending_highlight_id = highlight_id
         self._render()
         return True
 
@@ -606,17 +678,60 @@ class CanvasView(QGraphicsView):
             return False
         self._capture_focus()
         leaving = self.scope_id
-        self.scope_id = self.plan.parent_id(self.scope_id)
-        self.active_area_id = leaving
+        new_scope = self.plan.parent_id(self.scope_id)
+        focus_id = self._interaction_id()
+        highlight_id = self._child_under(focus_id, new_scope) or leaving
+        self.scope_id = new_scope
+        self._prepare_active_area(highlight_id, new_scope)
         self.tile_scale = SCALE_MAX
-        self._scope_focus[self.scope_id] = leaving
+        if self.active_area_id is not None:
+            self._scope_focus[new_scope] = self.active_area_id
         self._focus_zoom_in = False
-        self._request_focus(leaving)
+        self._request_focus(highlight_id)
+        self._pending_highlight_id = highlight_id
         self._render()
         return True
 
     # ── память положения камеры между уровнями ──
+    def _interaction_id(self) -> Optional[str]:
+        node = self._selected_node()
+        if node is not None:
+            return node.element.id
+        return self.active_area_id or self.scope_id
+
+    def _child_under(self, element_id: Optional[str],
+                     parent_id: Optional[str]) -> Optional[str]:
+        if not element_id or not parent_id:
+            return None
+        current: Optional[str] = element_id
+        while current is not None:
+            if current == parent_id:
+                return current
+            if self.plan.parent_id(current) == parent_id:
+                return current
+            current = self.plan.parent_id(current)
+        return None
+
+    def _prepare_active_area(self, highlight_id: str,
+                             scope_id: Optional[str]) -> None:
+        areas = ([self.plan.annual] if scope_id is None
+                 else self.plan.children_of(scope_id))
+        area_ids = {a.id for a in areas}
+        if highlight_id in area_ids:
+            self.active_area_id = highlight_id
+            return
+        parent_id = self.plan.parent_id(highlight_id)
+        if parent_id in area_ids:
+            self.active_area_id = parent_id
+            return
+        if areas:
+            self.active_area_id = areas[0].id
+
     def _capture_focus(self) -> None:
+        focus_id = self._interaction_id()
+        if focus_id is not None:
+            self._scope_focus[self.scope_id] = focus_id
+            return
         aid = self._area_under_center()
         if aid is not None:
             self._scope_focus[self.scope_id] = aid
@@ -642,6 +757,21 @@ class CanvasView(QGraphicsView):
         else:
             return
         self._move_camera_to(target, self._focus_zoom_in)
+
+    def _apply_pending_highlight(self) -> None:
+        highlight_id = self._pending_highlight_id
+        self._pending_highlight_id = None
+        if not highlight_id:
+            return
+        if highlight_id in self._nodes:
+            self._scene.clearSelection()
+            self._nodes[highlight_id].setSelected(True)
+            return
+        if highlight_id in self._areas:
+            self._set_active_area(highlight_id)
+            element = self.plan.get(highlight_id)
+            if element is not None:
+                self.node_selected.emit(element)
 
     def _move_camera_to(self, target: QPointF, zoom_in: bool) -> None:
         if not self.animations_enabled:
@@ -673,7 +803,11 @@ class CanvasView(QGraphicsView):
             self.centerOn(target)
 
         anim.valueChanged.connect(on_value)
-        anim.finished.connect(on_finished)
+        def on_finished_with_notify() -> None:
+            on_finished()
+            self.viewport_changed.emit()
+
+        anim.finished.connect(on_finished_with_notify)
         self._cam_anim = anim
         anim.start()
 
@@ -713,6 +847,45 @@ class CanvasView(QGraphicsView):
             if best_d is None or dist < best_d:
                 best_d, best = dist, area_id
         return best
+
+    def visible_area_ids(self) -> List[str]:
+        """Области, попадающие в текущий видимый прямоугольник полотна."""
+        vp = self.viewport().rect()
+        top_left = self.mapToScene(vp.topLeft())
+        bottom_right = self.mapToScene(vp.bottomRight())
+        visible = QRectF(top_left, bottom_right).normalized()
+        result: List[str] = []
+        for area_id, rect in self._area_rects.items():
+            if rect.intersects(visible):
+                result.append(area_id)
+        return result
+
+    def scroll_to_area(self, area_id: str) -> bool:
+        rect = self._area_rects.get(area_id)
+        if rect is None:
+            return False
+        self._set_active_area(area_id)
+        self._move_camera_to(rect.center(), False)
+        return True
+
+    def navigate_to_date(self, target: date) -> bool:
+        """Перейти к дню плана: войти в микроцикл и прокрутить к тренировке."""
+        start = parse_plan_start(self.plan.plan_start_date, self.plan)
+        day_index = build_day_index(self.plan, start)
+        pd = day_index.get(target)
+        if pd is None:
+            return False
+        from core.models import Microcycle
+        scope_el = self.plan.get(self.scope_id) if self.scope_id else None
+        in_micro = isinstance(scope_el, Microcycle) and self.scope_id == pd.microcycle_id
+        if not in_micro:
+            if not self.enter_scope(pd.microcycle_id):
+                return False
+        if pd.workout_id:
+            return self.scroll_to_area(pd.workout_id)
+        if pd.microcycle_id in self._area_rects:
+            return self.scroll_to_area(pd.microcycle_id)
+        return False
 
     # ──────────────────────────────────────────────────────────────────
     # Масштаб
@@ -913,6 +1086,7 @@ class CanvasView(QGraphicsView):
         delta = event.angleDelta().y() or event.angleDelta().x()
         self.horizontalScrollBar().setValue(
             self.horizontalScrollBar().value() - int(delta * 0.6))
+        self.viewport_changed.emit()
         event.accept()
 
     def mousePressEvent(self, event):

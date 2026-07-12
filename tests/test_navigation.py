@@ -43,6 +43,19 @@ def test_go_up_remembers_origin_area(canvas):
     assert canvas._scope_focus.get(meso.id) == micro.id
 
 
+def test_go_up_highlights_micro_when_workout_active(canvas):
+    plan, micro, meso, w1 = _make_plan()
+    canvas.load_plan(plan)
+    canvas.scroll_to_area(w1.id)
+    assert canvas.active_area_id == w1.id
+    selected = []
+    canvas.node_selected.connect(selected.append)
+    assert canvas.go_up() is True
+    assert canvas.scope_id == meso.id
+    assert canvas.active_area_id == micro.id
+    assert selected and selected[-1].id == micro.id
+
+
 def test_enter_then_up_is_symmetric(canvas):
     plan, micro, meso, _w1 = _make_plan()
     canvas.load_plan(plan)
@@ -65,6 +78,19 @@ def test_undo_redo_create_tile(canvas):
 
     canvas.redo()
     assert len(get_children(canvas.plan.get(w1.id))) == before + 1
+
+
+def test_navigate_to_date_scrolls_to_workout(canvas):
+    from core.calendar_map import build_day_index, parse_plan_start
+
+    plan, micro, _meso, _w1 = _make_plan()
+    plan.plan_start_date = "2026-01-01"
+    canvas.load_plan(plan)
+    start = parse_plan_start(plan.plan_start_date, plan)
+    idx = build_day_index(plan, start)
+    target = next(d.on_date for d in idx.values() if d.workout_id)
+    assert canvas.navigate_to_date(target) is True
+    assert canvas.scope_id == micro.id
 
 
 def test_overlap_resolved_on_release(canvas):

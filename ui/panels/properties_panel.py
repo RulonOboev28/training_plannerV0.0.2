@@ -1,18 +1,23 @@
 """Правая панель: параметры выбранного элемента (поля зависят от типа)."""
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtCore import QDate, Qt, pyqtSignal
 from PyQt6.QtWidgets import (
-    QComboBox, QDoubleSpinBox, QFormLayout, QFrame, QLabel, QLineEdit,
-    QPushButton, QScrollArea, QSpinBox, QTextEdit, QVBoxLayout, QWidget,
+    QComboBox, QDateEdit, QDoubleSpinBox, QFormLayout, QFrame, QLabel, QLineEdit,
+    QPushButton, QScrollArea, QSizePolicy, QSpinBox, QTextEdit, QVBoxLayout, QWidget,
 )
 
+from core.calendar_map import element_date_info, format_display, format_iso, parse_iso_date
+from core.date_cascade import apply_manual_date, clear_manual_dates_in_subtree
 from core.models import (
-    AnnualPlan, CycleType, Exercise, ExerciseType, Macrocycle, Mesocycle,
-    Microcycle, Workout,
+    AnnualPlan, CycleType, Exercise, ExerciseType, HierarchyLevel, Macrocycle,
+    Mesocycle, Microcycle, Workout,
 )
+
+if TYPE_CHECKING:
+    from ui.canvas.viewport import CanvasView
 
 # Типы упражнений, для которых показываем объём/интенсивность
 _VOLUME_TYPES = {
@@ -31,6 +36,8 @@ class PropertiesPanel(QFrame):
         self.element = None
         self._loading = False
         self._w: dict = {}
+        self._canvas: Optional[CanvasView] = None
+        self._date_override_keys: set[str] = set()
 
         root = QVBoxLayout(self)
         root.setContentsMargins(14, 14, 14, 14)
@@ -49,8 +56,9 @@ class PropertiesPanel(QFrame):
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
         self.scroll.setFrameShape(QFrame.Shape.NoFrame)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.form_host = QWidget()
+        self.form_host.setMinimumWidth(0)
         self.form_layout = QVBoxLayout(self.form_host)
         self.form_layout.setContentsMargins(0, 0, 0, 0)
         self.form_layout.setSpacing(10)
@@ -60,11 +68,22 @@ class PropertiesPanel(QFrame):
 
         self.btn_library = QPushButton("★  Сохранить как шаблон")
         self.btn_library.setObjectName("accent")
+        self.btn_library.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.btn_library.clicked.connect(self._on_save_to_library)
         self.btn_library.setVisible(False)
         root.addWidget(self.btn_library)
 
     # ──────────────────────────────────────────────────────────────────
+    def bind_canvas(self, canvas: CanvasView) -> None:
+        self._canvas = canvas
+        canvas.level_changed.connect(self._on_canvas_context_changed)
+        canvas.plan_changed.connect(self._on_canvas_context_changed)
+
+    def _on_canvas_context_changed(self, *_args) -> None:
+        if self.element is not None and not self._loading:
+            self._rebuild()
+
     def show_placeholder(self) -> None:
         self.element = None
         self._clear_form()
@@ -91,6 +110,7 @@ class PropertiesPanel(QFrame):
 
     def _rebuild(self) -> None:
         self._loading = True
+        self._date_override_keys.clear()
         self._clear_form()
         el = self.element
         if isinstance(el, Exercise):
@@ -105,7 +125,8 @@ class PropertiesPanel(QFrame):
             self._build_macrocycle(el)
         elif isinstance(el, AnnualPlan):
             self._build_annual(el)
-        self._build_aggregates(el)  # опциональная сводка (см. core/aggregates.py)
+        self._build_aggregates(el)
+        self._build_dates_section(el)
         self._loading = False
 
     def _build_aggregates(self, el) -> None:
@@ -121,7 +142,7 @@ class PropertiesPanel(QFrame):
         for section in sections:
             lay = self._group(f"Сводка — {section.title}")
             for label, value in section.rows:
-                field = QLineEdit(value)
+                field = self._responsive_field(QLineEdit(value))
                 field.setReadOnly(True)
                 lay.addRow(label + ":", field)
 
@@ -129,10 +150,14 @@ class PropertiesPanel(QFrame):
     def _group(self, title: str) -> QFormLayout:
         box = QFrame()
         box.setObjectName("group")
+        box.setMinimumWidth(0)
         lay = QFormLayout(box)
-        lay.setContentsMargins(12, 14, 12, 12)
-        lay.setSpacing(9)
-        lay.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+        lay.setContentsMargins(10, 12, 10, 10)
+        lay.setSpacing(8)
+        lay.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapAllRows)
+        lay.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
+        lay.setLabelAlignment(
+            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         header = QLabel(title)
         header.setObjectName("group_title")
         self.form_layout.insertWidget(self.form_layout.count() - 1, header)
@@ -172,6 +197,118 @@ class PropertiesPanel(QFrame):
 
         lay3 = self._group("Заметки")
         self._w["notes"] = self._text(lay3, ex.notes)
+
+    def _build_dates_section(self, el) -> None:
+        if self._canvas is None:
+            return
+        plan = self._canvas.plan
+        info = element_date_info(plan, el.id)
+
+        if isinstance(el, Exercise):
+            if not self._show_exercise_date():
+                return
+            lay = self._group("Дата")
+            self._w["scheduled_date"] = self._date_field(
+                lay, "Дата выполнения", el.scheduled_date,
+                info.computed_start, key="scheduled_date")
+            return
+
+        if isinstance(el, Workout):
+            lay = self._group("Дата")
+            self._w["start_date"] = self._date_field(
+                lay, "Дата тренировки", el.start_date,
+                info.computed_start, key="start_date")
+            return
+
+        if isinstance(el, Microcycle):
+            lay = self._group("Даты")
+            self._w["start_date"] = self._date_field(
+                lay, "Начало", el.start_date, info.computed_start, key="start_date")
+            self._w["end_date"] = self._date_field(
+                lay, "Окончание", el.end_date, info.computed_end, key="end_date")
+            return
+
+        if isinstance(el, (Mesocycle, Macrocycle)):
+            lay = self._group("Даты")
+            self._w["start_date"] = self._date_field(
+                lay, "Начало", el.start_date, info.computed_start, key="start_date")
+            self._w["end_date"] = self._date_field(
+                lay, "Окончание", el.end_date, info.computed_end, key="end_date")
+            return
+
+        if isinstance(el, AnnualPlan):
+            lay = self._group("Дата")
+            anchor = info.computed_start or info.start
+            stored = el.start_date or plan.plan_start_date
+            self._w["start_date"] = self._date_field(
+                lay, "Начало плана", stored, anchor, key="start_date")
+
+    def _show_exercise_date(self) -> bool:
+        """Дата упражнения видна на стадии микроцикла (не внутри одной тренировки)."""
+        if self._canvas is None:
+            return False
+        return self._canvas.area_level() == HierarchyLevel.WORKOUT
+
+    def _date_field(self, lay: QFormLayout, label: str, stored: Optional[str],
+                    computed, key: str) -> QDateEdit:
+        w = QDateEdit()
+        w.setCalendarPopup(True)
+        w.setDisplayFormat("dd.MM.yyyy")
+        self._responsive_field(w)
+        effective = parse_iso_date(stored) or computed
+        w.blockSignals(True)
+        if effective is not None:
+            w.setDate(QDate(effective.year, effective.month, effective.day))
+        w.blockSignals(False)
+        w.dateChanged.connect(lambda: self._mark_date_override(key))
+        w.dateChanged.connect(self._commit)
+        lay.addRow(label + ":", w)
+
+        hint = QLabel(self._date_hint(stored, computed))
+        hint.setObjectName("hint")
+        hint.setWordWrap(True)
+        hint.setMinimumWidth(0)
+        lay.addRow("", hint)
+        self._w[f"{key}_hint"] = hint
+
+        if stored:
+            btn = QPushButton("Сбросить → расчёт")
+            btn.setFlat(True)
+            btn.setObjectName("cal_toggle")
+            btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+            btn.clicked.connect(lambda _=False, k=key: self._reset_date(k))
+            lay.addRow("", btn)
+        return w
+
+    def _date_hint(self, stored: Optional[str], computed) -> str:
+        if stored:
+            return f"Задано вручную. Расчёт: {format_display(computed)}"
+        if computed is not None:
+            return f"Рассчитывается автоматически: {format_display(computed)}"
+        return "Дата будет рассчитана по положению в плане"
+
+    def _mark_date_override(self, key: str) -> None:
+        if not self._loading:
+            self._date_override_keys.add(key)
+
+    def _reset_date(self, key: str) -> None:
+        if self.element is None or self._canvas is None:
+            return
+        el = self.element
+        plan = self._canvas.plan
+        if key == "scheduled_date" and isinstance(el, Exercise):
+            el.scheduled_date = None
+        elif key == "start_date":
+            el.start_date = None
+            if isinstance(el, AnnualPlan):
+                plan.plan_start_date = None
+            if isinstance(el, (Microcycle, Mesocycle, Macrocycle)):
+                clear_manual_dates_in_subtree(el)
+        elif key == "end_date":
+            el.end_date = None
+        self._date_override_keys.discard(key)
+        self.data_changed.emit(el)
+        self._rebuild()
 
     def _build_workout(self, w: Workout) -> None:
         self.title_label.setText("Тренировка")
@@ -226,8 +363,14 @@ class PropertiesPanel(QFrame):
         self._w["notes"] = self._text(lay3, a.notes)
 
     # ── фабрики виджетов ──
+    def _responsive_field(self, w: QWidget) -> QWidget:
+        """Поля растягиваются на ширину панели и не обрезаются при сужении."""
+        w.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        w.setMinimumWidth(0)
+        return w
+
     def _line(self, lay: QFormLayout, label: str, value: str) -> QLineEdit:
-        w = QLineEdit(value)
+        w = self._responsive_field(QLineEdit(value))
         w.textChanged.connect(self._commit)
         lay.addRow(label + ":", w)
         return w
@@ -235,13 +378,15 @@ class PropertiesPanel(QFrame):
     def _text(self, lay: QFormLayout, value: str) -> QTextEdit:
         w = QTextEdit(value)
         w.setMaximumHeight(90)
+        w.setMinimumWidth(0)
+        w.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         w.textChanged.connect(self._commit)
         lay.addRow(w)
         return w
 
     def _spin(self, lay: QFormLayout, label: str, value: int,
               lo: int, hi: int, suffix: str) -> QSpinBox:
-        w = QSpinBox()
+        w = self._responsive_field(QSpinBox())
         w.setRange(lo, hi)
         w.setValue(int(value))
         if suffix:
@@ -252,7 +397,7 @@ class PropertiesPanel(QFrame):
 
     def _dspin(self, lay: QFormLayout, label: str, value: float,
                lo: float, hi: float, suffix: str) -> QDoubleSpinBox:
-        w = QDoubleSpinBox()
+        w = self._responsive_field(QDoubleSpinBox())
         w.setRange(lo, hi)
         w.setDecimals(1)
         w.setSingleStep(0.5)
@@ -265,7 +410,7 @@ class PropertiesPanel(QFrame):
 
     def _combo(self, lay: QFormLayout, label: str, items: list, current: str,
                on_change=None) -> QComboBox:
-        w = QComboBox()
+        w = self._responsive_field(QComboBox())
         w.addItems(items)
         if current in items:
             w.setCurrentText(current)
@@ -321,7 +466,23 @@ class PropertiesPanel(QFrame):
             el.year = w["year"].value()
             el.sport_type = w["sport"].text()
 
+        self._commit_dates(el)
         self.data_changed.emit(el)
+
+    def _commit_dates(self, el) -> None:
+        if not self._date_override_keys or self._canvas is None:
+            return
+
+        plan = self._canvas.plan
+        for key in list(self._date_override_keys):
+            widget = self._w.get(key)
+            if widget is None:
+                continue
+            new_date = widget.date().toPyDate()
+            apply_manual_date(plan, el.id, key, new_date)
+
+        self._date_override_keys.clear()
+        self._rebuild()
 
     def _on_save_to_library(self) -> None:
         if self.element is not None:

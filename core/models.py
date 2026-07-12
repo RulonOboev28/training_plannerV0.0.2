@@ -130,9 +130,10 @@ class Exercise:
     reps: int = 0
     rest_seconds: int = 0
     equipment: str = ""
+    scheduled_date: Optional[str] = None  # YYYY-MM-DD, день внутри микроцикла
 
     def to_dict(self) -> dict:
-        return {
+        data = {
             "id": self.id,
             "title": self.title,
             "pos_x": self.pos_x,
@@ -150,6 +151,9 @@ class Exercise:
             "rest_seconds": self.rest_seconds,
             "equipment": self.equipment,
         }
+        if self.scheduled_date:
+            data["scheduled_date"] = self.scheduled_date
+        return data
 
     @classmethod
     def from_dict(cls, d: dict) -> "Exercise":
@@ -171,6 +175,7 @@ class Exercise:
             reps=d.get("reps", 0),
             rest_seconds=d.get("rest_seconds", 0),
             equipment=d.get("equipment", ""),
+            scheduled_date=d.get("scheduled_date"),
         )
 
     def subtitle(self) -> str:
@@ -200,9 +205,10 @@ class Workout:
     workout_type: ExerciseType = ExerciseType.ENDURANCE
     duration_minutes: int = 0
     exercises: List[Exercise] = field(default_factory=list)
+    start_date: Optional[str] = None  # YYYY-MM-DD
 
     def to_dict(self) -> dict:
-        return {
+        data = {
             "id": self.id,
             "title": self.title,
             "pos_x": self.pos_x,
@@ -213,6 +219,9 @@ class Workout:
             "duration_minutes": self.duration_minutes,
             "exercises": [e.to_dict() for e in self.exercises],
         }
+        if self.start_date:
+            data["start_date"] = self.start_date
+        return data
 
     @classmethod
     def from_dict(cls, d: dict) -> "Workout":
@@ -227,6 +236,7 @@ class Workout:
                                           ExerciseType.ENDURANCE),
             duration_minutes=d.get("duration_minutes", 0),
             exercises=[Exercise.from_dict(e) for e in d.get("exercises", [])],
+            start_date=d.get("start_date"),
         )
 
     def subtitle(self) -> str:
@@ -245,9 +255,11 @@ class Microcycle:
     cycle_type: CycleType = CycleType.BASE
     duration_days: int = 7
     workouts: List[Workout] = field(default_factory=list)
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
 
     def to_dict(self) -> dict:
-        return {
+        data = {
             "id": self.id,
             "title": self.title,
             "pos_x": self.pos_x,
@@ -258,6 +270,11 @@ class Microcycle:
             "duration_days": self.duration_days,
             "workouts": [w.to_dict() for w in self.workouts],
         }
+        if self.start_date:
+            data["start_date"] = self.start_date
+        if self.end_date:
+            data["end_date"] = self.end_date
+        return data
 
     @classmethod
     def from_dict(cls, d: dict) -> "Microcycle":
@@ -271,6 +288,8 @@ class Microcycle:
             cycle_type=_enum_from_value(CycleType, d.get("cycle_type"), CycleType.BASE),
             duration_days=d.get("duration_days", 7),
             workouts=[Workout.from_dict(w) for w in d.get("workouts", [])],
+            start_date=d.get("start_date"),
+            end_date=d.get("end_date"),
         )
 
     def subtitle(self) -> str:
@@ -289,9 +308,11 @@ class Mesocycle:
     cycle_type: CycleType = CycleType.BASE
     duration_weeks: int = 4
     microcycles: List[Microcycle] = field(default_factory=list)
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
 
     def to_dict(self) -> dict:
-        return {
+        data = {
             "id": self.id,
             "title": self.title,
             "pos_x": self.pos_x,
@@ -302,6 +323,11 @@ class Mesocycle:
             "duration_weeks": self.duration_weeks,
             "microcycles": [m.to_dict() for m in self.microcycles],
         }
+        if self.start_date:
+            data["start_date"] = self.start_date
+        if self.end_date:
+            data["end_date"] = self.end_date
+        return data
 
     @classmethod
     def from_dict(cls, d: dict) -> "Mesocycle":
@@ -315,6 +341,8 @@ class Mesocycle:
             cycle_type=_enum_from_value(CycleType, d.get("cycle_type"), CycleType.BASE),
             duration_weeks=d.get("duration_weeks", 4),
             microcycles=[Microcycle.from_dict(m) for m in d.get("microcycles", [])],
+            start_date=d.get("start_date"),
+            end_date=d.get("end_date"),
         )
 
     def subtitle(self) -> str:
@@ -332,9 +360,11 @@ class Macrocycle:
 
     duration_months: int = 3
     mesocycles: List[Mesocycle] = field(default_factory=list)
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
 
     def to_dict(self) -> dict:
-        return {
+        data = {
             "id": self.id,
             "title": self.title,
             "pos_x": self.pos_x,
@@ -344,6 +374,11 @@ class Macrocycle:
             "duration_months": self.duration_months,
             "mesocycles": [m.to_dict() for m in self.mesocycles],
         }
+        if self.start_date:
+            data["start_date"] = self.start_date
+        if self.end_date:
+            data["end_date"] = self.end_date
+        return data
 
     @classmethod
     def from_dict(cls, d: dict) -> "Macrocycle":
@@ -356,6 +391,8 @@ class Macrocycle:
             connections=[Connection.from_dict(c) for c in d.get("connections", [])],
             duration_months=d.get("duration_months", 3),
             mesocycles=[Mesocycle.from_dict(m) for m in d.get("mesocycles", [])],
+            start_date=d.get("start_date"),
+            end_date=d.get("end_date"),
         )
 
     def subtitle(self) -> str:
@@ -374,9 +411,10 @@ class AnnualPlan:
     year: int = 2026
     sport_type: str = ""
     macrocycles: List[Macrocycle] = field(default_factory=list)
+    start_date: Optional[str] = None
 
     def to_dict(self) -> dict:
-        return {
+        data = {
             "id": self.id,
             "title": self.title,
             "pos_x": self.pos_x,
@@ -387,6 +425,9 @@ class AnnualPlan:
             "sport_type": self.sport_type,
             "macrocycles": [m.to_dict() for m in self.macrocycles],
         }
+        if self.start_date:
+            data["start_date"] = self.start_date
+        return data
 
     @classmethod
     def from_dict(cls, d: dict) -> "AnnualPlan":
@@ -400,6 +441,7 @@ class AnnualPlan:
             year=d.get("year", 2026),
             sport_type=d.get("sport_type", ""),
             macrocycles=[Macrocycle.from_dict(m) for m in d.get("macrocycles", [])],
+            start_date=d.get("start_date"),
         )
 
     def subtitle(self) -> str:
@@ -530,8 +572,10 @@ def element_type_key(element) -> str:
 class TrainingPlan:
     """Контейнер всего плана с индексами id->элемент и id->родитель."""
 
-    def __init__(self, annual: Optional[AnnualPlan] = None):
+    def __init__(self, annual: Optional[AnnualPlan] = None,
+                 plan_start_date: Optional[str] = None):
         self.annual: AnnualPlan = annual or AnnualPlan()
+        self.plan_start_date: Optional[str] = plan_start_date
         self._by_id: Dict[str, object] = {}
         self._parent: Dict[str, Optional[str]] = {}
         self.reindex()
@@ -639,12 +683,18 @@ class TrainingPlan:
 
     # — сериализация —
     def to_dict(self) -> dict:
-        return {"version": 1, "annual": self.annual.to_dict()}
+        data = {"version": 1, "annual": self.annual.to_dict()}
+        if self.plan_start_date:
+            data["plan_start_date"] = self.plan_start_date
+        return data
 
     @classmethod
     def from_dict(cls, d: dict) -> "TrainingPlan":
         annual = AnnualPlan.from_dict(d.get("annual", {}))
-        return cls(annual=annual)
+        return cls(
+            annual=annual,
+            plan_start_date=d.get("plan_start_date"),
+        )
 
 
 # ──────────────────────────────────────────────────────────────────────────

@@ -1,0 +1,2497 @@
+{
+  "version": 1,
+  "annual": {
+    "id": "07eadc57",
+    "title": "Персональная программа тренировок v1.0",
+    "pos_x": 0.0,
+    "pos_y": 0.0,
+    "notes": "Программа из блокнота «Персональная программа тренировок». Инвентарь: гантели до 2×12,5 кг, турник, брусья, резинки, диван. Первые две недели — вводные. Главная задача — регулярность.",
+    "connections": [],
+    "year": 2026,
+    "sport_type": "Силовой тренинг / домашний зал",
+    "macrocycles": [
+      {
+        "id": "18e0b536",
+        "title": "Летний блок — рекомпозиция",
+        "pos_x": 0.0,
+        "pos_y": 0.0,
+        "notes": "Первый мезоцикл программы рекомпозиции тела.",
+        "connections": [],
+        "duration_months": 1,
+        "mesocycles": [
+          {
+            "id": "f7b2fce0",
+            "title": "Рекомпозиция — вводный блок (2 недели)",
+            "pos_x": 0.0,
+            "pos_y": 0.0,
+            "notes": "Персональная программа v1.0. 24 года, 189 см, 86 кг. Цель: снижение жира до 14–16% с набором мышечной массы. Частота: Пн/Ср/Пт — силовая; Вт/Чт/Сб — велосипед 40–60 мин, пульс 120–140; Вс — отдых. Разминка 10 мин + основная часть 60–75 мин + пресс 10 мин. Белок ≈170 г/день, вода 3 л, креатин 5 г/день, сон 7,5–9 ч. Прогрессия: верхняя граница повторений во всех подходах → +2 кг. Цикл рассчитан минимум на 8–12 недель (чередование недель 1 и 2).",
+            "connections": [],
+            "cycle_type": "Втягивающий",
+            "duration_weeks": 2,
+            "microcycles": [
+              {
+                "id": "980c7fef",
+                "title": "Микроцикл 1 — Неделя №1 (вводная)",
+                "pos_x": 0.0,
+                "pos_y": 0.0,
+                "notes": "Вводный микроцикл. Цель — привычка и техника, не максимум. Силовые: 6, 8, 10 июля. Воскресенье 12 июля — отдых. Между силовыми днями — велосипед (вт, чт, сб) по программе блокнота.",
+                "connections": [
+                  {
+                    "target_id": "c45b62a3",
+                    "kind": "sequence"
+                  }
+                ],
+                "cycle_type": "Втягивающий",
+                "duration_days": 7,
+                "workouts": [
+                  {
+                    "id": "cb434d30",
+                    "title": "День А — Грудь + Трицепс + Передняя дельта",
+                    "pos_x": 0.0,
+                    "pos_y": 0.0,
+                    "notes": "Неделя №1 · вводная. Интенсивность: 1–2 повторения до отказа. Темп 2–0–2. Отдых: тяжёлые 2 мин, средние 90 сек, изоляция 45–60 сек.",
+                    "connections": [
+                      {
+                        "target_id": "3dab9bd7",
+                        "kind": "sequence"
+                      }
+                    ],
+                    "workout_type": "Силовое",
+                    "duration_minutes": 0,
+                    "exercises": [
+                      {
+                        "id": "8790cc13",
+                        "title": "Суставная гимнастика",
+                        "pos_x": 0.0,
+                        "pos_y": 0.0,
+                        "notes": "По 10 вращений: шея, плечи, локти, кисти, таз, колени, голеностоп.",
+                        "connections": [
+                          {
+                            "target_id": "915d0a72",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 0,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "915d0a72",
+                        "title": "Отжимания (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 150.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "03f9a09f",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 10,
+                        "rest_seconds": 0,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "03f9a09f",
+                        "title": "Приседания (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 300.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "1e467bca",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 15,
+                        "rest_seconds": 0,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "1e467bca",
+                        "title": "Подтягивание лопатками",
+                        "pos_x": 0.0,
+                        "pos_y": 450.0,
+                        "notes": "Не подтягиваясь полностью.",
+                        "connections": [
+                          {
+                            "target_id": "abfcd964",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 10,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "abfcd964",
+                        "title": "Планка (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 600.0,
+                        "notes": "30 секунд.",
+                        "connections": [
+                          {
+                            "target_id": "e51b2a33",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 1,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "e51b2a33",
+                        "title": "Разведение резинки",
+                        "pos_x": 0.0,
+                        "pos_y": 750.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "1f7d856c",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 20,
+                        "rest_seconds": 0,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "1f7d856c",
+                        "title": "Разминочный подход 1-го упражнения",
+                        "pos_x": 0.0,
+                        "pos_y": 900.0,
+                        "notes": "Пример: рабочий вес 20 кг → 10 кг×10, 15 кг×5, затем рабочие подходы.",
+                        "connections": [
+                          {
+                            "target_id": "53f10dcc",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 0,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "53f10dcc",
+                        "title": "Подтягивания широким хватом",
+                        "pos_x": 440.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 6–8 повторений.\nДа, начинаем не с груди. Это сделано намеренно: подтягивания отлично разогревают плечевой пояс и улучшают стабильность перед жимовыми упражнениями. Если легко — используй рюкзак с весом.",
+                        "connections": [
+                          {
+                            "target_id": "9c0b1ccd",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 8,
+                        "rest_seconds": 120,
+                        "equipment": "турник",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "9c0b1ccd",
+                        "title": "Жим гантелей лёжа на полу",
+                        "pos_x": 790.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 8–10 повторений.\nГлавное базовое упражнение. Медленное опускание. Полностью не расслабляй руки внизу.",
+                        "connections": [
+                          {
+                            "target_id": "0037602f",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 10,
+                        "rest_seconds": 120,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "0037602f",
+                        "title": "Отжимания с резинкой",
+                        "pos_x": 1140.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 10–15 повторений.\nРезинку заводишь за спину. Последний подход — почти до отказа.",
+                        "connections": [
+                          {
+                            "target_id": "650c01e6",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 15,
+                        "rest_seconds": 90,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "650c01e6",
+                        "title": "Разведения гантелей лёжа на полу",
+                        "pos_x": 1490.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12–15 повторений.\nДа, амплитуда меньше, чем на скамье. Но отлично работает верхняя часть грудных. Без больших весов. Главное — растянуть грудь.",
+                        "connections": [
+                          {
+                            "target_id": "d2570f88",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 15,
+                        "rest_seconds": 60,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "d2570f88",
+                        "title": "Отжимания на брусьях",
+                        "pos_x": 1840.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 8–12 повторений.\nС небольшим наклоном вперёд. Если станет легко — добавляем рюкзак.",
+                        "connections": [
+                          {
+                            "target_id": "fd5be328",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 12,
+                        "rest_seconds": 120,
+                        "equipment": "брусья",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "fd5be328",
+                        "title": "Французский жим одной гантелью",
+                        "pos_x": 2190.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 10–12 повторений.\nИз-за головы. Сидя.",
+                        "connections": [
+                          {
+                            "target_id": "23b45dd4",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 12,
+                        "rest_seconds": 60,
+                        "equipment": "гантель",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "23b45dd4",
+                        "title": "Подъём гантелей перед собой",
+                        "pos_x": 2540.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12–15 повторений.\nПередняя дельта.",
+                        "connections": [
+                          {
+                            "target_id": "9f42a385",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 15,
+                        "rest_seconds": 60,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "9f42a385",
+                        "title": "Подъём ног в висе",
+                        "pos_x": 2980.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12–15 повторений.\nНе раскачиваться.",
+                        "connections": [
+                          {
+                            "target_id": "11af7d83",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 15,
+                        "rest_seconds": 60,
+                        "equipment": "турник",
+                        "scheduled_date": "2026-07-06"
+                      },
+                      {
+                        "id": "11af7d83",
+                        "title": "Планка",
+                        "pos_x": 3330.0,
+                        "pos_y": 0.0,
+                        "notes": "3 подхода по 45–60 секунд.",
+                        "connections": [],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 0,
+                        "rest_seconds": 60,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-06"
+                      }
+                    ],
+                    "start_date": "2026-07-06"
+                  },
+                  {
+                    "id": "3dab9bd7",
+                    "title": "День B — Спина + Бицепс + Задняя дельта",
+                    "pos_x": 350.0,
+                    "pos_y": 0.0,
+                    "notes": "Неделя №1 · вводная. Не стремись сразу увеличивать веса — восстанови технику и почувствуй работу мышц.",
+                    "connections": [
+                      {
+                        "target_id": "3eb4b7a5",
+                        "kind": "sequence"
+                      }
+                    ],
+                    "workout_type": "Силовое",
+                    "duration_minutes": 0,
+                    "exercises": [
+                      {
+                        "id": "f36094af",
+                        "title": "Суставная гимнастика",
+                        "pos_x": 0.0,
+                        "pos_y": 0.0,
+                        "notes": "По 10 вращений: шея, плечи, локти, кисти, таз, колени, голеностоп.",
+                        "connections": [
+                          {
+                            "target_id": "5124e4c9",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 0,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "5124e4c9",
+                        "title": "Отжимания (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 150.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "78286bd2",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 10,
+                        "rest_seconds": 0,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "78286bd2",
+                        "title": "Приседания (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 300.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "07e04667",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 15,
+                        "rest_seconds": 0,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "07e04667",
+                        "title": "Подтягивание лопатками",
+                        "pos_x": 0.0,
+                        "pos_y": 450.0,
+                        "notes": "Не подтягиваясь полностью.",
+                        "connections": [
+                          {
+                            "target_id": "1db023bb",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 10,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "1db023bb",
+                        "title": "Планка (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 600.0,
+                        "notes": "30 секунд.",
+                        "connections": [
+                          {
+                            "target_id": "45067bd2",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 1,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "45067bd2",
+                        "title": "Разведение резинки",
+                        "pos_x": 0.0,
+                        "pos_y": 750.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "964de1a1",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 20,
+                        "rest_seconds": 0,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "964de1a1",
+                        "title": "Разминочный подход 1-го упражнения",
+                        "pos_x": 0.0,
+                        "pos_y": 900.0,
+                        "notes": "Пример: рабочий вес 20 кг → 10 кг×10, 15 кг×5, затем рабочие подходы.",
+                        "connections": [
+                          {
+                            "target_id": "8553918f",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 0,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "8553918f",
+                        "title": "Подтягивания",
+                        "pos_x": 440.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: максимум −2 повторений.\nНе до отказа — оставляй 2 повторения в запасе.",
+                        "connections": [
+                          {
+                            "target_id": "f1b1cccf",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 0,
+                        "rest_seconds": 120,
+                        "equipment": "турник",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "f1b1cccf",
+                        "title": "Тяга одной гантели",
+                        "pos_x": 790.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 10–12 повторений.\nОпора рукой и коленом на диван. Если диван слишком мягкий — используй два устойчивых стула. Каждая рука.",
+                        "connections": [
+                          {
+                            "target_id": "407814d2",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 12,
+                        "rest_seconds": 90,
+                        "equipment": "гантель, диван/стулья",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "407814d2",
+                        "title": "Тяга гантелей к поясу в наклоне",
+                        "pos_x": 1140.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 8–10 повторений.\nМожно выполнять с двумя гантелями одновременно. Либо одной тяжёлой (22,5 кг).",
+                        "connections": [
+                          {
+                            "target_id": "8e21ff2c",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 10,
+                        "rest_seconds": 120,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "8e21ff2c",
+                        "title": "Тяга резинки сверху вниз",
+                        "pos_x": 1490.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 15 повторений.\nИмитация вертикального блока. Очень медленно.",
+                        "connections": [
+                          {
+                            "target_id": "02efc324",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 15,
+                        "rest_seconds": 60,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "02efc324",
+                        "title": "Face Pull резинкой",
+                        "pos_x": 1840.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 15–20 повторений.\nОдно из лучших упражнений.",
+                        "connections": [
+                          {
+                            "target_id": "99a0ccdb",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 20,
+                        "rest_seconds": 60,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "99a0ccdb",
+                        "title": "Подъём гантелей на бицепс",
+                        "pos_x": 2190.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 10–12 повторений.\nПопеременно.",
+                        "connections": [
+                          {
+                            "target_id": "bd04a43e",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 12,
+                        "rest_seconds": 60,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "bd04a43e",
+                        "title": "Молотки",
+                        "pos_x": 2540.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12 повторений.",
+                        "connections": [
+                          {
+                            "target_id": "c8253564",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 12,
+                        "rest_seconds": 60,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "c8253564",
+                        "title": "Русские повороты",
+                        "pos_x": 2980.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 20 повторений.",
+                        "connections": [
+                          {
+                            "target_id": "15cd13e5",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 20,
+                        "rest_seconds": 45,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-08"
+                      },
+                      {
+                        "id": "15cd13e5",
+                        "title": "Боковая планка",
+                        "pos_x": 3330.0,
+                        "pos_y": 0.0,
+                        "notes": "2×40 секунд на каждую сторону.",
+                        "connections": [],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 0,
+                        "rest_seconds": 45,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-08"
+                      }
+                    ],
+                    "start_date": "2026-07-08"
+                  },
+                  {
+                    "id": "3eb4b7a5",
+                    "title": "День C — Ноги + Плечи + Добивка груди и рук",
+                    "pos_x": 700.0,
+                    "pos_y": 0.0,
+                    "notes": "Неделя №1 · вводная. Ноги поддерживают гормональный фон и снижают риск дисбалансов.",
+                    "connections": [],
+                    "workout_type": "Силовое",
+                    "duration_minutes": 0,
+                    "exercises": [
+                      {
+                        "id": "3f203bce",
+                        "title": "Суставная гимнастика",
+                        "pos_x": 0.0,
+                        "pos_y": 0.0,
+                        "notes": "По 10 вращений: шея, плечи, локти, кисти, таз, колени, голеностоп.",
+                        "connections": [
+                          {
+                            "target_id": "145dba85",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 0,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "145dba85",
+                        "title": "Отжимания (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 150.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "89b6aa16",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 10,
+                        "rest_seconds": 0,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "89b6aa16",
+                        "title": "Приседания (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 300.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "3b0092c2",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 15,
+                        "rest_seconds": 0,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "3b0092c2",
+                        "title": "Подтягивание лопатками",
+                        "pos_x": 0.0,
+                        "pos_y": 450.0,
+                        "notes": "Не подтягиваясь полностью.",
+                        "connections": [
+                          {
+                            "target_id": "864af082",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 10,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "864af082",
+                        "title": "Планка (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 600.0,
+                        "notes": "30 секунд.",
+                        "connections": [
+                          {
+                            "target_id": "5916411a",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 1,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "5916411a",
+                        "title": "Разведение резинки",
+                        "pos_x": 0.0,
+                        "pos_y": 750.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "82d06c57",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 20,
+                        "rest_seconds": 0,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "82d06c57",
+                        "title": "Разминочный подход 1-го упражнения",
+                        "pos_x": 0.0,
+                        "pos_y": 900.0,
+                        "notes": "Пример: рабочий вес 20 кг → 10 кг×10, 15 кг×5, затем рабочие подходы.",
+                        "connections": [
+                          {
+                            "target_id": "433d52e3",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 0,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "433d52e3",
+                        "title": "Приседания с двумя гантелями",
+                        "pos_x": 440.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 10–12 повторений.\nЕсли веса не хватает — замедляй опускание до 3–4 секунд и делай паузу внизу на 1 секунду.",
+                        "connections": [
+                          {
+                            "target_id": "14081056",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 12,
+                        "rest_seconds": 120,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "14081056",
+                        "title": "Румынская тяга с гантелями",
+                        "pos_x": 790.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 8–10 повторений.\nСледи за нейтральным положением спины, движение начинается с отведения таза назад.",
+                        "connections": [
+                          {
+                            "target_id": "ef1e0bb1",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 10,
+                        "rest_seconds": 120,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "ef1e0bb1",
+                        "title": "Болгарские сплит-приседания",
+                        "pos_x": 1140.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 10–12 повторений.\nЗадняя нога на диване. На каждую ногу. Отлично компенсирует ограниченный вес гантелей.",
+                        "connections": [
+                          {
+                            "target_id": "88b440b6",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 12,
+                        "rest_seconds": 90,
+                        "equipment": "гантели, диван",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "88b440b6",
+                        "title": "Подъёмы на носки стоя",
+                        "pos_x": 1490.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 15–20 повторений.\nС гантелями в руках. В верхней точке задержка 1–2 секунды.",
+                        "connections": [
+                          {
+                            "target_id": "84d58228",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 20,
+                        "rest_seconds": 60,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "84d58228",
+                        "title": "Жим гантелей стоя",
+                        "pos_x": 1840.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 8–10 повторений.\nНе прогибайся в пояснице, напряги пресс и ягодицы.",
+                        "connections": [
+                          {
+                            "target_id": "ba2ce337",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 10,
+                        "rest_seconds": 120,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "ba2ce337",
+                        "title": "Разведения гантелей в стороны",
+                        "pos_x": 2190.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12–15 повторений.\nПоднимай локти чуть выше кистей, не поднимай плечи к ушам.",
+                        "connections": [
+                          {
+                            "target_id": "f6ef714b",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 15,
+                        "rest_seconds": 60,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "f6ef714b",
+                        "title": "Отжимания узким хватом",
+                        "pos_x": 2540.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: почти до отказа повторений.\nДополнительная нагрузка на грудь и трицепс.",
+                        "connections": [
+                          {
+                            "target_id": "f19632e7",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 0,
+                        "rest_seconds": 90,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "f19632e7",
+                        "title": "Сгибания рук с резинкой (добивка)",
+                        "pos_x": 2890.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 15–20 повторений.\nДо ощущения хорошего жжения, но без нарушения техники.",
+                        "connections": [
+                          {
+                            "target_id": "bdf422dc",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 20,
+                        "rest_seconds": 45,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "bdf422dc",
+                        "title": "Скручивания с медленным негативом",
+                        "pos_x": 3330.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 15–20 повторений.\nОпускание корпуса — 3 секунды.",
+                        "connections": [
+                          {
+                            "target_id": "183eb20c",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 20,
+                        "rest_seconds": 45,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-10"
+                      },
+                      {
+                        "id": "183eb20c",
+                        "title": "Подъём коленей в висе",
+                        "pos_x": 3680.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12–15 повторений.\nБез раскачивания, концентрируйся на работе пресса.",
+                        "connections": [],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 15,
+                        "rest_seconds": 60,
+                        "equipment": "турник",
+                        "scheduled_date": "2026-07-10"
+                      }
+                    ],
+                    "start_date": "2026-07-10"
+                  }
+                ],
+                "start_date": "2026-07-06",
+                "end_date": "2026-07-12"
+              },
+              {
+                "id": "c45b62a3",
+                "title": "Микроцикл 2 — Неделя №2 (TUT)",
+                "pos_x": 350.0,
+                "pos_y": 0.0,
+                "notes": "Второй микроцикл. Больше повторений, контроль движения, памп. Силовые: 13, 15, 17 июля. Суббота 18 и воскресенье 19 июля — выходные.",
+                "connections": [],
+                "cycle_type": "Базовый",
+                "duration_days": 7,
+                "workouts": [
+                  {
+                    "id": "ed914add",
+                    "title": "День А — Грудь + Трицепс + Передняя дельта",
+                    "pos_x": 0.0,
+                    "pos_y": 0.0,
+                    "notes": "Неделя №2 · диапазон 10–15 повторений, вес −10–15%. В последних подходах базовых упражнений можно подходить к отказу.",
+                    "connections": [
+                      {
+                        "target_id": "7295a05f",
+                        "kind": "sequence"
+                      }
+                    ],
+                    "workout_type": "Силовое",
+                    "duration_minutes": 0,
+                    "exercises": [
+                      {
+                        "id": "81fea0e9",
+                        "title": "Суставная гимнастика",
+                        "pos_x": 0.0,
+                        "pos_y": 0.0,
+                        "notes": "По 10 вращений: шея, плечи, локти, кисти, таз, колени, голеностоп.",
+                        "connections": [
+                          {
+                            "target_id": "ccbb0f10",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 0,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "ccbb0f10",
+                        "title": "Отжимания (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 150.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "dbb7048b",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 10,
+                        "rest_seconds": 0,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "dbb7048b",
+                        "title": "Приседания (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 300.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "75ea7220",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 15,
+                        "rest_seconds": 0,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "75ea7220",
+                        "title": "Подтягивание лопатками",
+                        "pos_x": 0.0,
+                        "pos_y": 450.0,
+                        "notes": "Не подтягиваясь полностью.",
+                        "connections": [
+                          {
+                            "target_id": "5cf286ae",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 10,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "5cf286ae",
+                        "title": "Планка (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 600.0,
+                        "notes": "30 секунд.",
+                        "connections": [
+                          {
+                            "target_id": "56652dc7",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 1,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "56652dc7",
+                        "title": "Разведение резинки",
+                        "pos_x": 0.0,
+                        "pos_y": 750.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "726b8b8d",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 20,
+                        "rest_seconds": 0,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "726b8b8d",
+                        "title": "Разминочный подход 1-го упражнения",
+                        "pos_x": 0.0,
+                        "pos_y": 900.0,
+                        "notes": "Пример: рабочий вес 20 кг → 10 кг×10, 15 кг×5, затем рабочие подходы.",
+                        "connections": [
+                          {
+                            "target_id": "b6dcdcf0",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 0,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "b6dcdcf0",
+                        "title": "Подтягивания",
+                        "pos_x": 440.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 8 повторений.\nПоследний подход — максимум без нарушения техники.",
+                        "connections": [
+                          {
+                            "target_id": "774219d3",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 8,
+                        "rest_seconds": 120,
+                        "equipment": "турник",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "774219d3",
+                        "title": "Жим гантелей лёжа",
+                        "pos_x": 790.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 10–12 повторений.\nОпускаем вес на 10–15%. Опускание 3 секунды.",
+                        "connections": [
+                          {
+                            "target_id": "bc2ebb9f",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 12,
+                        "rest_seconds": 120,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "bc2ebb9f",
+                        "title": "Отжимания с резинкой",
+                        "pos_x": 1140.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12–15 повторений.\nПоследний подход до технического отказа.",
+                        "connections": [
+                          {
+                            "target_id": "3def503b",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 15,
+                        "rest_seconds": 90,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "3def503b",
+                        "title": "Сведение гантелей лёжа",
+                        "pos_x": 1490.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 15 повторений.\nВ верхней точке не соединять гантели. Постоянное напряжение.",
+                        "connections": [
+                          {
+                            "target_id": "f54b4958",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 15,
+                        "rest_seconds": 60,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "f54b4958",
+                        "title": "Брусья",
+                        "pos_x": 1840.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 10–12 повторений.\nМедленный негатив.",
+                        "connections": [
+                          {
+                            "target_id": "ce87cbbe",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 12,
+                        "rest_seconds": 120,
+                        "equipment": "брусья",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "ce87cbbe",
+                        "title": "Французский жим",
+                        "pos_x": 2190.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12–15 повторений.\nВ последнем подходе сразу после отказа берёшь более лёгкую гантель и выполняешь ещё 6–8 повторений. (Первый дроп-сет.)",
+                        "connections": [
+                          {
+                            "target_id": "c6e4dd19",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 15,
+                        "rest_seconds": 60,
+                        "equipment": "гантель",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "c6e4dd19",
+                        "title": "Подъём перед собой",
+                        "pos_x": 2540.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 15 повторений.\nБез читинга.",
+                        "connections": [
+                          {
+                            "target_id": "caa014b0",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 15,
+                        "rest_seconds": 60,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "caa014b0",
+                        "title": "Подъём ног к турнику",
+                        "pos_x": 2980.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12 повторений.",
+                        "connections": [
+                          {
+                            "target_id": "1dc8109a",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 12,
+                        "rest_seconds": 60,
+                        "equipment": "турник",
+                        "scheduled_date": "2026-07-13"
+                      },
+                      {
+                        "id": "1dc8109a",
+                        "title": "Планка",
+                        "pos_x": 3330.0,
+                        "pos_y": 0.0,
+                        "notes": "1 подход максимум времени. Запиши результат — будем улучшать.",
+                        "connections": [],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 1,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-13"
+                      }
+                    ],
+                    "start_date": "2026-07-13"
+                  },
+                  {
+                    "id": "7295a05f",
+                    "title": "День B — Спина + Бицепс",
+                    "pos_x": 350.0,
+                    "pos_y": 0.0,
+                    "notes": "Неделя №2 · увеличение времени под нагрузкой (TUT). Face Pull — не пропускать.",
+                    "connections": [
+                      {
+                        "target_id": "90e0734d",
+                        "kind": "sequence"
+                      }
+                    ],
+                    "workout_type": "Силовое",
+                    "duration_minutes": 0,
+                    "exercises": [
+                      {
+                        "id": "1934e934",
+                        "title": "Суставная гимнастика",
+                        "pos_x": 0.0,
+                        "pos_y": 0.0,
+                        "notes": "По 10 вращений: шея, плечи, локти, кисти, таз, колени, голеностоп.",
+                        "connections": [
+                          {
+                            "target_id": "95ede7ec",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 0,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "95ede7ec",
+                        "title": "Отжимания (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 150.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "c8cc5ecd",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 10,
+                        "rest_seconds": 0,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "c8cc5ecd",
+                        "title": "Приседания (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 300.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "0ec4a581",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 15,
+                        "rest_seconds": 0,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "0ec4a581",
+                        "title": "Подтягивание лопатками",
+                        "pos_x": 0.0,
+                        "pos_y": 450.0,
+                        "notes": "Не подтягиваясь полностью.",
+                        "connections": [
+                          {
+                            "target_id": "77e5cf2b",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 10,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "77e5cf2b",
+                        "title": "Планка (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 600.0,
+                        "notes": "30 секунд.",
+                        "connections": [
+                          {
+                            "target_id": "41cb6f2d",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 1,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "41cb6f2d",
+                        "title": "Разведение резинки",
+                        "pos_x": 0.0,
+                        "pos_y": 750.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "cd4aecd2",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 20,
+                        "rest_seconds": 0,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "cd4aecd2",
+                        "title": "Разминочный подход 1-го упражнения",
+                        "pos_x": 0.0,
+                        "pos_y": 900.0,
+                        "notes": "Пример: рабочий вес 20 кг → 10 кг×10, 15 кг×5, затем рабочие подходы.",
+                        "connections": [
+                          {
+                            "target_id": "0da888d7",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 0,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "0da888d7",
+                        "title": "Подтягивания",
+                        "pos_x": 440.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: максимум −1 повторений.\n5 подходов по максимум −1 повторение.",
+                        "connections": [
+                          {
+                            "target_id": "60bc58da",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 5,
+                        "reps": 0,
+                        "rest_seconds": 120,
+                        "equipment": "турник",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "60bc58da",
+                        "title": "Тяга одной рукой",
+                        "pos_x": 790.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12 повторений.\nВ верхней точке удержание 1 секунда.",
+                        "connections": [
+                          {
+                            "target_id": "b2d4abed",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 12,
+                        "rest_seconds": 90,
+                        "equipment": "гантель",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "b2d4abed",
+                        "title": "Тяга гантелей",
+                        "pos_x": 1140.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12–15 повторений.\nОпускание 3 секунды.",
+                        "connections": [
+                          {
+                            "target_id": "ca9e2e41",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 15,
+                        "rest_seconds": 90,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "ca9e2e41",
+                        "title": "Тяга резинки",
+                        "pos_x": 1490.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 15 повторений.\nМаксимально растягивай широчайшие.",
+                        "connections": [
+                          {
+                            "target_id": "040f2fe9",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 15,
+                        "rest_seconds": 60,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "040f2fe9",
+                        "title": "Face Pull",
+                        "pos_x": 1840.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 20 повторений.\nОдно из самых важных упражнений программы. Не пропускай.",
+                        "connections": [
+                          {
+                            "target_id": "205d0176",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 20,
+                        "rest_seconds": 60,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "205d0176",
+                        "title": "Подъёмы на бицепс",
+                        "pos_x": 2190.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12 повторений.\nПосле последнего подхода сразу без отдыха делаем молотки.",
+                        "connections": [
+                          {
+                            "target_id": "328d4e0a",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 12,
+                        "rest_seconds": 60,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "328d4e0a",
+                        "title": "Молотки",
+                        "pos_x": 2540.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: до отказа повторений.\nСупerset после подъёмов на бицепс — до отказа.",
+                        "connections": [
+                          {
+                            "target_id": "d6d991da",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 1,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "d6d991da",
+                        "title": "Русские повороты",
+                        "pos_x": 2980.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 25 повторений.",
+                        "connections": [
+                          {
+                            "target_id": "596815a4",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 25,
+                        "rest_seconds": 45,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-15"
+                      },
+                      {
+                        "id": "596815a4",
+                        "title": "Боковая планка",
+                        "pos_x": 3330.0,
+                        "pos_y": 0.0,
+                        "notes": "3×45 секунд.",
+                        "connections": [],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 0,
+                        "rest_seconds": 45,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-15"
+                      }
+                    ],
+                    "start_date": "2026-07-15"
+                  },
+                  {
+                    "id": "90e0734d",
+                    "title": "День C — Ноги + Плечи + Дополнительная грудь",
+                    "pos_x": 700.0,
+                    "pos_y": 0.0,
+                    "notes": "Неделя №2 · дроп-сеты и медленные негативы при ограниченном инвентаре.",
+                    "connections": [],
+                    "workout_type": "Силовое",
+                    "duration_minutes": 0,
+                    "exercises": [
+                      {
+                        "id": "35bea63e",
+                        "title": "Суставная гимнастика",
+                        "pos_x": 0.0,
+                        "pos_y": 0.0,
+                        "notes": "По 10 вращений: шея, плечи, локти, кисти, таз, колени, голеностоп.",
+                        "connections": [
+                          {
+                            "target_id": "6c5901dc",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 0,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "6c5901dc",
+                        "title": "Отжимания (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 150.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "7f1a5ac2",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 10,
+                        "rest_seconds": 0,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "7f1a5ac2",
+                        "title": "Приседания (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 300.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "fc52e311",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 15,
+                        "rest_seconds": 0,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "fc52e311",
+                        "title": "Подтягивание лопатками",
+                        "pos_x": 0.0,
+                        "pos_y": 450.0,
+                        "notes": "Не подтягиваясь полностью.",
+                        "connections": [
+                          {
+                            "target_id": "bc984336",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 10,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "bc984336",
+                        "title": "Планка (разминка)",
+                        "pos_x": 0.0,
+                        "pos_y": 600.0,
+                        "notes": "30 секунд.",
+                        "connections": [
+                          {
+                            "target_id": "bf964a6d",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 1,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "bf964a6d",
+                        "title": "Разведение резинки",
+                        "pos_x": 0.0,
+                        "pos_y": 750.0,
+                        "notes": "",
+                        "connections": [
+                          {
+                            "target_id": "342fcb5e",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 20,
+                        "rest_seconds": 0,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "342fcb5e",
+                        "title": "Разминочный подход 1-го упражнения",
+                        "pos_x": 0.0,
+                        "pos_y": 900.0,
+                        "notes": "Пример: рабочий вес 20 кг → 10 кг×10, 15 кг×5, затем рабочие подходы.",
+                        "connections": [
+                          {
+                            "target_id": "eca4c694",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Техническое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 0,
+                        "reps": 0,
+                        "rest_seconds": 0,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "eca4c694",
+                        "title": "Приседания",
+                        "pos_x": 440.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 15 повторений.\nВес немного легче. Очень медленно.",
+                        "connections": [
+                          {
+                            "target_id": "2bae5995",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 15,
+                        "rest_seconds": 120,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "2bae5995",
+                        "title": "Румынская тяга",
+                        "pos_x": 790.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12 повторений.\nПауза 1 секунда в растянутом положении.",
+                        "connections": [
+                          {
+                            "target_id": "aef32cab",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 12,
+                        "rest_seconds": 120,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "aef32cab",
+                        "title": "Болгарские приседы",
+                        "pos_x": 1140.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 12 повторений.\nПоследний подход — без веса. До жжения.",
+                        "connections": [
+                          {
+                            "target_id": "0f9bd457",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 12,
+                        "rest_seconds": 90,
+                        "equipment": "гантели, диван",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "0f9bd457",
+                        "title": "Подъём на носки",
+                        "pos_x": 1490.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 20 повторений.\nПауза сверху 2 секунды.",
+                        "connections": [
+                          {
+                            "target_id": "cee8f552",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 5,
+                        "reps": 20,
+                        "rest_seconds": 60,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "cee8f552",
+                        "title": "Жим гантелей вверх",
+                        "pos_x": 1840.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 10–12 повторений.\nПоследний подход — дроп-сет.",
+                        "connections": [
+                          {
+                            "target_id": "0c3be850",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 12,
+                        "rest_seconds": 120,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "0c3be850",
+                        "title": "Разведения",
+                        "pos_x": 2190.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 15 повторений.\nОчень медленно.",
+                        "connections": [
+                          {
+                            "target_id": "2b687c46",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 15,
+                        "rest_seconds": 60,
+                        "equipment": "гантели",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "2b687c46",
+                        "title": "Отжимания",
+                        "pos_x": 2540.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: до отказа повторений.\n2 подхода до отказа.",
+                        "connections": [
+                          {
+                            "target_id": "82e83377",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 0,
+                        "rest_seconds": 90,
+                        "equipment": "собственный вес",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "82e83377",
+                        "title": "Бицепс резинкой",
+                        "pos_x": 2890.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 20 повторений.",
+                        "connections": [
+                          {
+                            "target_id": "835e31b5",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 2,
+                        "reps": 20,
+                        "rest_seconds": 45,
+                        "equipment": "резинка",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "835e31b5",
+                        "title": "Скручивания",
+                        "pos_x": 3330.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 20 повторений.",
+                        "connections": [
+                          {
+                            "target_id": "627dab22",
+                            "kind": "sequence"
+                          }
+                        ],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 4,
+                        "reps": 20,
+                        "rest_seconds": 45,
+                        "equipment": "",
+                        "scheduled_date": "2026-07-17"
+                      },
+                      {
+                        "id": "627dab22",
+                        "title": "Подъём ног",
+                        "pos_x": 3680.0,
+                        "pos_y": 0.0,
+                        "notes": "Диапазон: 15 повторений.",
+                        "connections": [],
+                        "exercise_type": "Силовое",
+                        "duration_minutes": 0,
+                        "volume_km": 0.0,
+                        "intensity_percent": 0,
+                        "hr_zone": "",
+                        "weight_kg": 0.0,
+                        "sets": 3,
+                        "reps": 15,
+                        "rest_seconds": 60,
+                        "equipment": "турник",
+                        "scheduled_date": "2026-07-17"
+                      }
+                    ],
+                    "start_date": "2026-07-17"
+                  }
+                ],
+                "start_date": "2026-07-13",
+                "end_date": "2026-07-19"
+              }
+            ],
+            "start_date": "2026-07-06",
+            "end_date": "2026-07-19"
+          }
+        ],
+        "start_date": "2026-07-06",
+        "end_date": "2026-07-19"
+      }
+    ],
+    "start_date": "2026-07-06"
+  },
+  "plan_start_date": "2026-07-06"
+}

@@ -3,13 +3,13 @@
 Стрелка по умолчанию выходит из ПРАВОГО края плитки-источника и плавно
 изгибается к цели. Если цель расположена прямо над источником или под ним
 (параллельно, в том же «столбце») — стрелка выходит из верхнего/нижнего края.
-Когда элементы стоят на одной прямой, линия получается прямой; при смещении —
-аккуратно изогнутой за счёт кубической кривой Безье.
+При авто-расстановке: внутри колонки — стрелка вниз; между колонками — сбоку,
+дуга проходит под плитками.
 """
 from __future__ import annotations
 
 import math
-from typing import List
+from typing import List, Tuple
 
 from PyQt6.QtCore import QPointF, QRectF, Qt
 from PyQt6.QtGui import QColor, QPainter, QPainterPath, QPen, QPolygonF
@@ -19,6 +19,7 @@ from ui.canvas import nodes
 from ui.canvas.nodes import TileNode
 
 ARROW_SIZE = 13.0
+AUTO_WRAP_CHANNEL = 55.0
 
 
 class ConnectionItem(QGraphicsItem):
@@ -29,22 +30,24 @@ class ConnectionItem(QGraphicsItem):
         self.kind = kind
         self._path = QPainterPath()
         self._arrow = QPolygonF()
-        self.setZValue(0)
+        self.setZValue(-1)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
         self.update_path()
 
     def set_obstacles(self, nodes: List[TileNode]) -> None:
-        # Совместимость со старым API: обход препятствий больше не используется,
-        # стрелки строятся гладкой кривой Безье.
         return
 
-    # ──────────────────────────────────────────────────────────────────
     def update_path(self) -> None:
         self.prepareGeometryChange()
 
         sr = self._scene_rect(self.source)
         tr = self._scene_rect(self.target)
-        start, s_normal, end, t_normal = _anchors(sr, tr)
+
+        if self.kind == "auto_wrap":
+            self._build_auto_wrap_path(sr, tr)
+            return
+
+        start, s_normal, end, t_normal = _anchors(sr, tr, self.kind)
 
         dist = math.hypot(end.x() - start.x(), end.y() - start.y())
         k = max(45.0, min(170.0, dist * 0.45))
@@ -56,7 +59,23 @@ class ConnectionItem(QGraphicsItem):
         path.cubicTo(c1, c2, end)
         self._path = path
 
-        # касательная в конце кривой Безье: 3*(end - c2)
+        angle = math.atan2(end.y() - c2.y(), end.x() - c2.x())
+        self._arrow = _arrow_head(end, angle, ARROW_SIZE)
+
+    def _build_auto_wrap_path(self, sr: QRectF, tr: QRectF) -> None:
+        sc, tc = sr.center(), tr.center()
+        start = QPointF(sr.right(), sc.y())
+        end = QPointF(tr.left(), tc.y())
+        channel_y = max(sr.bottom(), tr.bottom()) + AUTO_WRAP_CHANNEL
+        bulge = max(60.0, (end.x() - start.x()) * 0.22)
+
+        path = QPainterPath()
+        path.moveTo(start)
+        c1 = QPointF(start.x() + bulge, channel_y)
+        c2 = QPointF(end.x() - bulge, channel_y)
+        path.cubicTo(c1, c2, end)
+        self._path = path
+
         angle = math.atan2(end.y() - c2.y(), end.x() - c2.x())
         self._arrow = _arrow_head(end, angle, ARROW_SIZE)
 
@@ -65,7 +84,6 @@ class ConnectionItem(QGraphicsItem):
         top_left = node.mapToScene(QPointF(0.0, 0.0))
         return QRectF(top_left.x(), top_left.y(), nodes.TILE_W, nodes.TILE_H)
 
-    # ──────────────────────────────────────────────────────────────────
     def boundingRect(self) -> QRectF:
         return self._path.boundingRect().adjusted(
             -ARROW_SIZE, -ARROW_SIZE, ARROW_SIZE, ARROW_SIZE)
@@ -75,7 +93,7 @@ class ConnectionItem(QGraphicsItem):
 
     def paint(self, painter: QPainter, option, widget=None) -> None:
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-        color = QColor("#8a93e6") if self.kind == "sequence" else QColor("#b07fd0")
+        color = QColor("#8a93e6") if self.kind in ("sequence", "auto_down", "auto_wrap") else QColor("#b07fd0")
         if self.isSelected():
             color = QColor("#c6515c")
 
@@ -91,37 +109,42 @@ class ConnectionItem(QGraphicsItem):
         painter.drawPolygon(self._arrow)
 
 
-# ──────────────────────────────────────────────────────────────────────────
-# Геометрия
-# ──────────────────────────────────────────────────────────────────────────
-
-def _anchors(sr: QRectF, tr: QRectF):
-    """Точки выхода/входа стрелки и внешние нормали соответствующих рёбер.
-
-    Возвращает (start, start_normal, end, end_normal). Нормали направлены наружу
-    из плитки — по ним строятся контрольные точки кривой.
-    """
+def _anchors(sr: QRectF, tr: QRectF, kind: str = "sequence") -> Tuple[QPointF, QPointF, QPointF, QPointF]:
+    """Точки выхода/входа стрелки и внешние нормали соответствующих рёбер."""
     sc, tc = sr.center(), tr.center()
     dx = tc.x() - sc.x()
     dy = tc.y() - sc.y()
 
-    # «прямо над/под» — горизонтальные центры почти совпадают, а по вертикали
-    # элементы заметно разнесены (параллельное расположение в одном столбце)
-    stacked = abs(dx) <= nodes.TILE_W * 0.5 and abs(dy) > nodes.TILE_H * 0.5
-    if stacked:
-        if dy >= 0:  # цель снизу
+    if kind == "auto_down":
+        start = QPointF(sc.x(), sr.bottom())
+        s_normal = QPointF(0.0, 1.0)
+        end = QPointF(tc.x(), tr.top())
+        t_normal = QPointF(0.0, -1.0)
+        return start, s_normal, end, t_normal
+
+    if kind == "sequence":
+        col_wrap = (dx > nodes.TILE_W * 0.5 and dy < -nodes.TILE_H * 0.5)
+        if col_wrap:
             start = QPointF(sc.x(), sr.bottom())
             s_normal = QPointF(0.0, 1.0)
             end = QPointF(tc.x(), tr.top())
             t_normal = QPointF(0.0, -1.0)
-        else:        # цель сверху
+            return start, s_normal, end, t_normal
+
+    stacked = abs(dx) <= nodes.TILE_W * 0.5 and abs(dy) > nodes.TILE_H * 0.5
+    if stacked:
+        if dy >= 0:
+            start = QPointF(sc.x(), sr.bottom())
+            s_normal = QPointF(0.0, 1.0)
+            end = QPointF(tc.x(), tr.top())
+            t_normal = QPointF(0.0, -1.0)
+        else:
             start = QPointF(sc.x(), sr.top())
             s_normal = QPointF(0.0, -1.0)
             end = QPointF(tc.x(), tr.bottom())
             t_normal = QPointF(0.0, 1.0)
         return start, s_normal, end, t_normal
 
-    # по умолчанию выходим из правого края источника
     start = QPointF(sr.right(), sc.y())
     s_normal = QPointF(1.0, 0.0)
     if tc.x() >= sc.x():

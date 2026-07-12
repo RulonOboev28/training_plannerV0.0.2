@@ -87,6 +87,27 @@ QFrame#group {
     border-radius: 10px;
 }
 
+QFrame#properties_panel QLineEdit,
+QFrame#properties_panel QDateEdit,
+QFrame#properties_panel QSpinBox,
+QFrame#properties_panel QDoubleSpinBox,
+QFrame#properties_panel QComboBox,
+QFrame#properties_panel QTextEdit {
+    min-width: 0;
+}
+
+QFrame#properties_panel QDateEdit::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 22px;
+    border-left: 1px solid #2a2f6a;
+}
+
+QFrame#properties_panel QPushButton#cal_toggle {
+    text-align: left;
+    padding-left: 4px;
+}
+
 /* Кнопки */
 QPushButton {
     background-color: #181a44;
@@ -241,3 +262,59 @@ QScrollBar::handle:horizontal {
 QScrollBar::handle:horizontal:hover { background: #524f9d; }
 QScrollBar::add-line, QScrollBar::sub-line { width: 0; height: 0; }
 QScrollBar::add-page, QScrollBar::sub-page { background: none; }
+
+/* Календарь навигации */
+QFrame#calendar_panel {
+    background-color: #0e0a24;
+    border-top: 1px solid #1e2786;
+}
+QDialog#calendar_dialog {
+    background-color: #0e0a24;
+}
+QLabel#cal_month {
+    color: #e8e4ff;
+    font-weight: bold;
+    font-size: 13px;
+}
+QLabel#cal_weekday {
+    color: #8a86b8;
+    font-size: 10px;
+}
+QLabel#cal_scope_micro {
+    color: #ffffff;
+    background-color: #3d9970;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+QLabel#cal_scope_meso {
+    color: #ffffff;
+    background-color: #1e2786;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+QLabel#cal_strip {
+    color: #c9c4f0;
+    font-size: 12px;
+}
+QPushButton#cal_toggle {
+    color: #c9c4f0;
+    font-weight: bold;
+    padding: 2px 8px;
+}
+QPushButton#cal_nav {
+    background-color: #161038;
+    border: 1px solid #2a2f6a;
+    border-radius: 4px;
+    color: #c9c4f0;
+    padding: 2px;
+}
+QPushButton#cal_nav:hover {
+    background-color: #1e2786;
+}
+QLabel#cal_legend_meso { color: #524f9d; }
+QLabel#cal_legend_micro { color: #1e2786; }
+QLabel#cal_legend_view { color: #c6515c; }
