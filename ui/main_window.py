@@ -6,9 +6,9 @@ from pathlib import Path
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
-    QCheckBox, QComboBox, QFileDialog, QInputDialog, QLabel, QMainWindow,
-    QMenu, QMessageBox, QPushButton, QSlider, QSplitter, QStatusBar, QToolBar,
-    QVBoxLayout, QWidget,
+    QCheckBox, QComboBox, QDialog, QFileDialog, QInputDialog,
+    QLabel, QMainWindow, QMenu, QMessageBox, QPushButton, QSlider, QSplitter,
+    QStatusBar, QToolBar, QVBoxLayout, QWidget, QStackedWidget,
 )
 
 from core import database, exporting, library_store
@@ -21,6 +21,9 @@ from ui.canvas import nodes
 from ui.canvas.viewport import CanvasView
 from ui.panels.calendar_panel import CalendarPanel
 from ui.panels.library_panel import LibraryPanel
+from ui.dialogs.history_dialog import HistoryDialog
+from ui.dialogs.save_to_library_dialog import SaveToLibraryDialog
+from ui.panels.filter_panel import FilterPanel
 from ui.panels.properties_panel import PropertiesPanel
 
 STYLES_DIR = resource_path("assets", "styles")
@@ -49,6 +52,10 @@ class MainWindow(QMainWindow):
         self.calendar = CalendarPanel()
         self.library = LibraryPanel()
         self.properties = PropertiesPanel()
+        self.filters = FilterPanel()
+        self.right_stack = QStackedWidget()
+        self.right_stack.addWidget(self.properties)
+        self.right_stack.addWidget(self.filters)
 
         self._build_toolbar()
         self._build_layout()
@@ -70,11 +77,11 @@ class MainWindow(QMainWindow):
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.addWidget(self.library)
         splitter.addWidget(canvas_wrap)
-        splitter.addWidget(self.properties)
+        splitter.addWidget(self.right_stack)
         splitter.setStretchFactor(1, 1)
         splitter.setSizes([280, 940, 320])
         self.library.setMinimumWidth(230)
-        self.properties.setMinimumWidth(280)
+        self.right_stack.setMinimumWidth(280)
         self.setCentralWidget(splitter)
 
     def _build_toolbar(self) -> None:
@@ -172,8 +179,9 @@ class MainWindow(QMainWindow):
         self.status.showMessage("Готов к работе")
 
     def _connect(self) -> None:
-        self.canvas.node_selected.connect(self.properties.set_element)
-        self.canvas.node_deselected.connect(self.properties.show_placeholder)
+        self.canvas.node_selected.connect(self._on_node_selected)
+        self.canvas.multi_selected.connect(self._on_multi_selected)
+        self.canvas.node_deselected.connect(self._on_node_deselected)
         self.canvas.level_changed.connect(self._on_level_changed)
         self.canvas.zoom_changed.connect(self._on_zoom_changed)
         self.canvas.plan_changed.connect(self._on_plan_changed)
@@ -186,6 +194,7 @@ class MainWindow(QMainWindow):
         self.calendar.bind_failed.connect(self._on_calendar_bind_failed)
 
         self.properties.bind_canvas(self.canvas)
+        self.filters.bind_canvas(self.canvas)
 
         self.properties.data_changed.connect(self._on_data_changed)
         self.properties.save_to_library.connect(self._on_save_to_library)
@@ -225,12 +234,24 @@ class MainWindow(QMainWindow):
             self.canvas.apply_tile_size(*size)
 
     # ── обработчики сигналов полотна ──
+    def _on_node_selected(self, element) -> None:
+        self.right_stack.setCurrentWidget(self.properties)
+        self.properties.set_element(element)
+
+    def _on_multi_selected(self, elements) -> None:
+        self.right_stack.setCurrentWidget(self.filters)
+        self.filters.set_selection(elements)
+
+    def _on_node_deselected(self) -> None:
+        self.right_stack.setCurrentWidget(self.properties)
+        self.properties.show_placeholder()
+
     def _on_level_changed(self, area_level: HierarchyLevel) -> None:
         self.library.set_level(self.canvas.tile_level())
         item_name = LEVEL_ITEM_NAMES.get(area_level, "область")
         self.btn_new_area.setText(f"＋ {item_name.capitalize()}")
         self.btn_new_area.setEnabled(self.canvas.scope_id is not None)
-        self.properties.show_placeholder()
+        self._on_node_deselected()
         self._update_level_label()
 
     def _on_zoom_changed(self, percent: int) -> None:
@@ -251,14 +272,17 @@ class MainWindow(QMainWindow):
         self.canvas.refresh_selected_node()
         self.canvas.commit_state(("edit", getattr(element, "id", None)))
         database.save_autosave(self.canvas.plan)
-        self.canvas.notify_plan_changed()
+        self.calendar.refresh_if_open()
         self._mark_saved()
 
     def _mark_saved(self) -> None:
         self.save_label.setText("Сохранено • " + datetime.now().strftime("%H:%M:%S"))
 
     def _on_save_to_library(self, element) -> None:
-        library_store.add_element(element)
+        dialog = SaveToLibraryDialog(element.title, self)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+        library_store.add_element(element, dialog.collection_id)
         self.library.refresh_personal()
         self.status.showMessage(f"Сохранено в библиотеку: {element.title}")
 
@@ -379,28 +403,17 @@ class MainWindow(QMainWindow):
             self.status.showMessage(f"Таблица сохранена: {path}")
 
     def _open_history(self) -> None:
-        history = database.list_history()
-        if not history:
-            QMessageBox.information(self, "История", "История версий пуста.")
+        if not self.canvas.action_journal.entries():
+            QMessageBox.information(
+                self, "История",
+                "Пока нет записей. Изменения появятся после редактирования плана.")
             return
-        labels = [label for _, label in history]
-        choice, ok = QInputDialog.getItem(
-            self, "История версий",
-            "Выберите версию для восстановления:", labels, 0, False)
-        if not ok or not choice:
-            return
-        name = next((n for n, label in history if label == choice), None)
-        if name is None:
-            return
-        plan = database.load_history(name)
-        if plan is None:
-            QMessageBox.warning(self, "История", "Не удалось загрузить версию.")
-            return
-        self.canvas.load_plan(plan)
-        database.save_autosave(self.canvas.plan)
-        self._update_level_label()
-        self._on_history_changed()
-        self.status.showMessage(f"Восстановлена версия: {choice}")
+        dialog = HistoryDialog(self.canvas, self)
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            database.save_autosave(self.canvas.plan)
+            self._on_node_deselected()
+            self._on_history_changed()
+            self.status.showMessage("План откачен к выбранному действию")
 
     def closeEvent(self, event):
         try:

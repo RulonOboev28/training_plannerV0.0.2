@@ -24,6 +24,7 @@ from PyQt6.QtCore import (
 from PyQt6.QtGui import QBrush, QColor, QImage, QPainter
 from PyQt6.QtWidgets import QGraphicsScene, QGraphicsView, QMenu
 
+from core.action_journal import ActionJournal
 from core.geometry import find_free_slot
 from core.models import (
     HierarchyLevel, TrainingPlan, clone_element, element_color, get_children,
@@ -75,6 +76,7 @@ def _area_min_w() -> float:
 class CanvasView(QGraphicsView):
     plan_changed = pyqtSignal()
     node_selected = pyqtSignal(object)
+    multi_selected = pyqtSignal(list)
     node_deselected = pyqtSignal()
     level_changed = pyqtSignal(object)   # area_level (HierarchyLevel)
     zoom_changed = pyqtSignal(int)
@@ -137,6 +139,7 @@ class CanvasView(QGraphicsView):
         self._history: List[dict] = []
         self._hist_index = -1
         self._coalesce_key = None
+        self.action_journal = ActionJournal(limit=25)
 
         self._scene.selectionChanged.connect(self._on_selection_changed)
         self.horizontalScrollBar().valueChanged.connect(self._emit_viewport_changed)
@@ -266,6 +269,13 @@ class CanvasView(QGraphicsView):
             conn.set_obstacles(node_list)
             conn.update_path()
 
+    def _invalidate_auto_routing(self, area_id: str) -> None:
+        for conn in self._connections:
+            if conn.source.area_id != area_id or conn.target.area_id != area_id:
+                continue
+            if conn.kind in ("auto_down", "auto_wrap"):
+                conn.set_auto_route(False)
+
     def _update_scene_rect_from_areas(self) -> None:
         margin = 1400.0
         vmargin = 420.0
@@ -357,6 +367,8 @@ class CanvasView(QGraphicsView):
         node.element.pos_x = node.pos().x() - origin.x()
         node.element.pos_y = node.pos().y() - origin.y()
         self._drag_dirty = True
+        if node.area_id:
+            self._invalidate_auto_routing(node.area_id)
         self._refresh_connections()
         area = self._areas.get(node.area_id)
         if area is not None:
@@ -436,6 +448,7 @@ class CanvasView(QGraphicsView):
         self._history = [self.plan.to_dict()]
         self._hist_index = 0
         self._coalesce_key = None
+        self.action_journal.clear()
         self.history_changed.emit()
 
     def commit_state(self, coalesce_key=None) -> None:
@@ -444,13 +457,17 @@ class CanvasView(QGraphicsView):
                 and self._hist_index == len(self._history) - 1
                 and self._hist_index >= 0):
             self._history[self._hist_index] = snap
+            self.action_journal.record(self.plan, coalesce_key, self._hist_index)
             return
         del self._history[self._hist_index + 1:]
         self._history.append(snap)
         if len(self._history) > HISTORY_LIMIT:
             self._history.pop(0)
+            self._hist_index -= 1
+            self.action_journal.shift_indices(-1)
         self._hist_index = len(self._history) - 1
         self._coalesce_key = coalesce_key
+        self.action_journal.record(self.plan, coalesce_key, self._hist_index)
         self.history_changed.emit()
 
     def can_undo(self) -> bool:
@@ -470,6 +487,29 @@ class CanvasView(QGraphicsView):
             return
         self._hist_index += 1
         self._load_state(self._history[self._hist_index])
+
+    def rollback_before(self, hist_index: int) -> bool:
+        """Откатить план к состоянию до выбранного действия (включая его)."""
+        target = hist_index - 1
+        if target < 0 or hist_index > self._hist_index:
+            return False
+        if hist_index >= len(self._history):
+            return False
+        del self._history[hist_index:]
+        self._hist_index = target
+        self._coalesce_key = None
+        self.action_journal.truncate_from(hist_index)
+        snap = self._history[target]
+        self.plan = TrainingPlan.from_dict(snap)
+        if self.scope_id is not None and self.plan.get(self.scope_id) is None:
+            self.scope_id = None
+            self.active_area_id = None
+        self._focus_requested = False
+        self._render()
+        self.node_deselected.emit()
+        self.history_changed.emit()
+        self.notify_plan_changed()
+        return True
 
     def _load_state(self, snap: dict) -> None:
         self._coalesce_key = None
@@ -535,6 +575,13 @@ class CanvasView(QGraphicsView):
         for n in self._nodes.values():
             n.setSelected(True)
 
+    def select_elements(self, elements: List) -> None:
+        ids = {getattr(el, "id", None) for el in elements}
+        self._scene.clearSelection()
+        for node in self._nodes.values():
+            if node.element.id in ids:
+                node.setSelected(True)
+
     # ──────────────────────────────────────────────────────────────────
     # Авто-расстановка
     # ──────────────────────────────────────────────────────────────────
@@ -549,7 +596,7 @@ class CanvasView(QGraphicsView):
         if not changed:
             return
         self._render()
-        self.commit_state()
+        self.commit_state(("layout", None))
         self.notify_plan_changed()
 
     def _ordered_children(self, children: List) -> List:
@@ -645,16 +692,23 @@ class CanvasView(QGraphicsView):
     # ──────────────────────────────────────────────────────────────────
     # Навигация
     # ──────────────────────────────────────────────────────────────────
-    def enter_scope(self, area_id: str) -> bool:
+    def enter_scope(self, area_id: str,
+                    focus_id: Optional[str] = None) -> bool:
         if self.tile_level().value <= MIN_TILE_LEVEL:
             return False
         if self.plan.get(area_id) is None:
             return False
         self._capture_focus()
-        remembered = self._scope_focus.get(area_id)
-        highlight_id = remembered or area_id
+        if focus_id is None:
+            focus_id = self._scope_focus.get(area_id)
+        if focus_id is None:
+            child = self._child_under(self._interaction_id(), area_id)
+            if child is not None and child != area_id:
+                focus_id = child
+        highlight_id = focus_id or area_id
         self.scope_id = area_id
         self._prepare_active_area(highlight_id, area_id)
+        self._scope_focus[area_id] = highlight_id
         self.tile_scale = SCALE_MAX
         self._focus_zoom_in = True
         self._request_focus(highlight_id)
@@ -665,13 +719,27 @@ class CanvasView(QGraphicsView):
     def enter_deeper(self) -> bool:
         if self.tile_level().value <= MIN_TILE_LEVEL:
             return False
-        area_id = self._area_under_center()
-        if area_id is None:
-            areas = self._areas_list()
-            area_id = areas[0].id if areas else None
+        areas = self._areas_list()
+        area_ids = {a.id for a in areas}
+        focus = self._interaction_id()
+        area_id = self.active_area_id
+        if area_id is None or area_id not in area_ids:
+            if focus is not None:
+                parent = self.plan.parent_id(focus)
+                if parent in area_ids:
+                    area_id = parent
+            if area_id is None or area_id not in area_ids:
+                area_id = self._area_under_center()
+        if area_id is None and areas:
+            area_id = areas[0].id
         if area_id is None:
             return False
-        return self.enter_scope(area_id)
+        focus_id = None
+        if focus is not None and focus != area_id:
+            focus_id = self._child_under(focus, area_id) or focus
+            if focus_id == area_id:
+                focus_id = None
+        return self.enter_scope(area_id, focus_id=focus_id)
 
     def go_up(self) -> bool:
         if self.scope_id is None:
@@ -879,7 +947,8 @@ class CanvasView(QGraphicsView):
         scope_el = self.plan.get(self.scope_id) if self.scope_id else None
         in_micro = isinstance(scope_el, Microcycle) and self.scope_id == pd.microcycle_id
         if not in_micro:
-            if not self.enter_scope(pd.microcycle_id):
+            if not self.enter_scope(
+                    pd.microcycle_id, focus_id=pd.workout_id):
                 return False
         if pd.workout_id:
             return self.scroll_to_area(pd.workout_id)
@@ -952,7 +1021,7 @@ class CanvasView(QGraphicsView):
             if node is not None:
                 self._resolve_overlap(node)
                 self._relayout_areas()
-            self.commit_state()
+            self.commit_state(("create", element.id))
             self.notify_plan_changed()
 
     def create_area(self) -> bool:
@@ -975,11 +1044,12 @@ class CanvasView(QGraphicsView):
             return
         for c in conns:
             self.plan.remove_connection(c.source.element.id, c.target.element.id)
+        deleted_id = tiles[0].element.id if tiles else None
         for t in tiles:
             self.plan.remove(t.element.id)
         self.node_deselected.emit()
         self._render()
-        self.commit_state()
+        self.commit_state(("delete", deleted_id))
         self.notify_plan_changed()
 
     def get_selected_element(self):
@@ -1068,12 +1138,17 @@ class CanvasView(QGraphicsView):
         return None
 
     def _on_selection_changed(self) -> None:
-        node = self._selected_node()
-        if node is not None:
+        tiles = self._selected_tiles()
+        if len(tiles) > 1:
+            self.multi_selected.emit([t.element for t in tiles])
+            self._set_active_area(tiles[0].area_id)
+            return
+        if len(tiles) == 1:
+            node = tiles[0]
             self.node_selected.emit(node.element)
             self._set_active_area(node.area_id)
-        else:
-            self.node_deselected.emit()
+            return
+        self.node_deselected.emit()
 
     # ──────────────────────────────────────────────────────────────────
     # События
@@ -1096,6 +1171,22 @@ class CanvasView(QGraphicsView):
             self.setCursor(Qt.CursorShape.ClosedHandCursor)
             event.accept()
             return
+        if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+            node = self._node_at(event.position().toPoint())
+            if node is not None:
+                if not node.isSelected():
+                    self._scene.clearSelection()
+                    node.setSelected(True)
+                if event.button() == Qt.MouseButton.LeftButton:
+                    self._set_source(node)
+                    event.accept()
+                    return
+                if event.button() == Qt.MouseButton.RightButton:
+                    if (self._source_node is not None
+                            and self._source_node is not node):
+                        self._connect_to(node)
+                    event.accept()
+                    return
         if event.button() == Qt.MouseButton.LeftButton:
             self._lmb_press = event.position()
             self._lmb_moved = False
@@ -1138,7 +1229,7 @@ class CanvasView(QGraphicsView):
         pos = event.position().toPoint()
         node = self._node_at(pos)
         if node is not None:
-            self.enter_scope(node.area_id)
+            self.enter_scope(node.area_id, focus_id=node.element.id)
             event.accept()
             return
         area = self._area_at(pos)
@@ -1150,6 +1241,9 @@ class CanvasView(QGraphicsView):
         event.accept()
 
     def contextMenuEvent(self, event):
+        if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+            event.accept()
+            return
         pos = event.pos()
         node = self._node_at(pos)
         menu = QMenu(self)
@@ -1166,12 +1260,13 @@ class CanvasView(QGraphicsView):
                            lambda: self.save_to_library_requested.emit(element))
             menu.addSeparator()
             if self._source_node is None:
-                menu.addAction("Создать связь отсюда",
+                menu.addAction("Создать связь отсюда  (Shift+ЛКМ)",
                                lambda: self._set_source(node))
             elif self._source_node is node:
                 menu.addAction("Отменить связь", lambda: self._set_source(None))
             else:
-                menu.addAction("Связать сюда", lambda: self._connect_to(node))
+                menu.addAction("Связать сюда  (Shift+ПКМ)",
+                               lambda: self._connect_to(node))
             menu.addSeparator()
             menu.addAction("Удалить  (Del)", self.delete_selected)
         else:

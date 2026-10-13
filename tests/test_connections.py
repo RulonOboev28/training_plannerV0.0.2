@@ -2,7 +2,7 @@
 from PyQt6.QtCore import QRectF
 
 from ui.canvas import nodes
-from ui.canvas.connections import _anchors
+from ui.canvas.connections import ConnectionItem, _anchors
 
 
 def test_horizontal_exits_right_edge(qapp):
@@ -39,11 +39,34 @@ def test_column_wrap_exits_bottom_to_top_for_manual_sequence(qapp):
     step_y = nodes.TILE_H + 80.0
     sr = QRectF(0.0, 2 * step_y, nodes.TILE_W, nodes.TILE_H)
     tr = QRectF(step_x, 0.0, nodes.TILE_W, nodes.TILE_H)
+    from ui.canvas.connections import _use_wrap_path
+
+    assert not _use_wrap_path(sr, tr, "sequence", False)
     start, s_normal, end, t_normal = _anchors(sr, tr, kind="sequence")
     assert (s_normal.x(), s_normal.y()) == (0.0, 1.0)
     assert start.y() == sr.bottom()
     assert (t_normal.x(), t_normal.y()) == (0.0, -1.0)
     assert end.y() == tr.top()
+
+
+def _wrap_path_bounds(sr: QRectF, tr: QRectF):
+    probe = ConnectionItem.__new__(ConnectionItem)
+    probe._obstacle_nodes = []
+    probe.kind = "auto_wrap"
+    probe._auto_route = True
+    probe._path = probe._arrow = None
+    probe._build_wrap_path(sr, tr)
+    return probe._path.boundingRect()
+
+
+def test_upward_wrap_runs_in_column_gutter_not_under_stack(qapp):
+    step_x = nodes.TILE_W + 90.0
+    step_y = nodes.TILE_H + 80.0
+    sr = QRectF(0.0, 2 * step_y, nodes.TILE_W, nodes.TILE_H)
+    tr = QRectF(step_x, 0.0, nodes.TILE_W, nodes.TILE_H)
+    bounds = _wrap_path_bounds(sr, tr)
+    # не уходит далеко под нижний край исходной колонки (старый «коридор» давал +55 и более)
+    assert bounds.bottom() <= sr.bottom() + 28.0
 
 
 def test_auto_wrap_uses_side_anchors(qapp):

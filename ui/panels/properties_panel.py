@@ -77,10 +77,9 @@ class PropertiesPanel(QFrame):
     # ──────────────────────────────────────────────────────────────────
     def bind_canvas(self, canvas: CanvasView) -> None:
         self._canvas = canvas
-        canvas.level_changed.connect(self._on_canvas_context_changed)
-        canvas.plan_changed.connect(self._on_canvas_context_changed)
+        canvas.level_changed.connect(self._on_level_changed)
 
-    def _on_canvas_context_changed(self, *_args) -> None:
+    def _on_level_changed(self, *_args) -> None:
         if self.element is not None and not self._loading:
             self._rebuild()
 

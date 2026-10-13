@@ -328,6 +328,9 @@ class CalendarPanel(QFrame):
         if self._expanded:
             self.refresh()
 
+    def refresh_if_open(self) -> None:
+        self._refresh_if_open()
+
     def _on_day_clicked(self, on_date: date, modifiers) -> None:
         if modifiers & Qt.KeyboardModifier.ControlModifier:
             self._try_bind_date(on_date)

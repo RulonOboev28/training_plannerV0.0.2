@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Type
+from typing import Dict, Iterator, List, Optional, Type
 import uuid
 
 
@@ -91,6 +91,42 @@ CYCLE_TYPE_COLORS: Dict[CycleType, str] = {
 
 
 # ──────────────────────────────────────────────────────────────────────────
+# Спортсмены группы (для публикации на сайт)
+# ──────────────────────────────────────────────────────────────────────────
+
+@dataclass
+class AthleteProfile:
+    """Профиль спортсмена в рамках одного тренировочного плана / группы."""
+
+    id: str = field(default_factory=new_id)
+    display_name: str = ""
+    login: str = ""
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "display_name": self.display_name,
+            "login": self.login,
+        }
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "AthleteProfile":
+        return cls(
+            id=d.get("id", new_id()),
+            display_name=d.get("display_name", ""),
+            login=d.get("login", ""),
+        )
+
+
+def is_assigned_to_athlete(assigned_to_all: bool,
+                           assigned_athlete_ids: List[str],
+                           athlete_id: str) -> bool:
+    if assigned_to_all:
+        return True
+    return athlete_id in assigned_athlete_ids
+
+
+# ──────────────────────────────────────────────────────────────────────────
 # Связь (стрелка)
 # ──────────────────────────────────────────────────────────────────────────
 
@@ -131,6 +167,8 @@ class Exercise:
     rest_seconds: int = 0
     equipment: str = ""
     scheduled_date: Optional[str] = None  # YYYY-MM-DD, день внутри микроцикла
+    assigned_to_all: bool = True
+    assigned_athlete_ids: List[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         data = {
@@ -153,6 +191,10 @@ class Exercise:
         }
         if self.scheduled_date:
             data["scheduled_date"] = self.scheduled_date
+        if not self.assigned_to_all:
+            data["assigned_to_all"] = False
+        if self.assigned_athlete_ids:
+            data["assigned_athlete_ids"] = list(self.assigned_athlete_ids)
         return data
 
     @classmethod
@@ -176,7 +218,13 @@ class Exercise:
             rest_seconds=d.get("rest_seconds", 0),
             equipment=d.get("equipment", ""),
             scheduled_date=d.get("scheduled_date"),
+            assigned_to_all=d.get("assigned_to_all", True),
+            assigned_athlete_ids=list(d.get("assigned_athlete_ids", [])),
         )
+
+    def visible_to_athlete(self, athlete_id: str) -> bool:
+        return is_assigned_to_athlete(
+            self.assigned_to_all, self.assigned_athlete_ids, athlete_id)
 
     def subtitle(self) -> str:
         parts: List[str] = []
@@ -206,6 +254,8 @@ class Workout:
     duration_minutes: int = 0
     exercises: List[Exercise] = field(default_factory=list)
     start_date: Optional[str] = None  # YYYY-MM-DD
+    assigned_to_all: bool = True
+    assigned_athlete_ids: List[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         data = {
@@ -221,6 +271,10 @@ class Workout:
         }
         if self.start_date:
             data["start_date"] = self.start_date
+        if not self.assigned_to_all:
+            data["assigned_to_all"] = False
+        if self.assigned_athlete_ids:
+            data["assigned_athlete_ids"] = list(self.assigned_athlete_ids)
         return data
 
     @classmethod
@@ -237,7 +291,13 @@ class Workout:
             duration_minutes=d.get("duration_minutes", 0),
             exercises=[Exercise.from_dict(e) for e in d.get("exercises", [])],
             start_date=d.get("start_date"),
+            assigned_to_all=d.get("assigned_to_all", True),
+            assigned_athlete_ids=list(d.get("assigned_athlete_ids", [])),
         )
+
+    def visible_to_athlete(self, athlete_id: str) -> bool:
+        return is_assigned_to_athlete(
+            self.assigned_to_all, self.assigned_athlete_ids, athlete_id)
 
     def subtitle(self) -> str:
         return f"{len(self.exercises)} упр. · {self.workout_type.value}"
@@ -573,9 +633,11 @@ class TrainingPlan:
     """Контейнер всего плана с индексами id->элемент и id->родитель."""
 
     def __init__(self, annual: Optional[AnnualPlan] = None,
-                 plan_start_date: Optional[str] = None):
+                 plan_start_date: Optional[str] = None,
+                 athletes: Optional[List[AthleteProfile]] = None):
         self.annual: AnnualPlan = annual or AnnualPlan()
         self.plan_start_date: Optional[str] = plan_start_date
+        self.athletes: List[AthleteProfile] = list(athletes or [])
         self._by_id: Dict[str, object] = {}
         self._parent: Dict[str, Optional[str]] = {}
         self.reindex()
@@ -686,20 +748,70 @@ class TrainingPlan:
         data = {"version": 1, "annual": self.annual.to_dict()}
         if self.plan_start_date:
             data["plan_start_date"] = self.plan_start_date
+        if self.athletes:
+            data["athletes"] = [a.to_dict() for a in self.athletes]
         return data
 
     @classmethod
     def from_dict(cls, d: dict) -> "TrainingPlan":
         annual = AnnualPlan.from_dict(d.get("annual", {}))
+        athletes = [AthleteProfile.from_dict(a) for a in d.get("athletes", [])]
         return cls(
             annual=annual,
             plan_start_date=d.get("plan_start_date"),
+            athletes=athletes,
         )
+
+    def athlete_by_id(self, athlete_id: str) -> Optional[AthleteProfile]:
+        for athlete in self.athletes:
+            if athlete.id == athlete_id:
+                return athlete
+        return None
+
+    def athlete_by_login(self, login: str) -> Optional[AthleteProfile]:
+        key = login.strip().lower()
+        if not key:
+            return None
+        for athlete in self.athletes:
+            if athlete.login.strip().lower() == key:
+                return athlete
+        return None
+
+    def duplicate_athlete_logins(self) -> List[str]:
+        seen: Dict[str, str] = {}
+        dupes: List[str] = []
+        for athlete in self.athletes:
+            key = athlete.login.strip().lower()
+            if not key:
+                continue
+            if key in seen:
+                dupes.append(key)
+            else:
+                seen[key] = athlete.id
+        return dupes
 
 
 # ──────────────────────────────────────────────────────────────────────────
 # Вспомогательные функции
 # ──────────────────────────────────────────────────────────────────────────
+
+def iter_exercises(plan: TrainingPlan) -> Iterator[Exercise]:
+    """Все упражнения плана в обходе дерева."""
+
+    def walk(element) -> Iterator[Exercise]:
+        if isinstance(element, Exercise):
+            yield element
+            return
+        for child in get_children(element):
+            yield from walk(child)
+
+    yield from walk(plan.annual)
+
+
+def exercises_for_athlete(plan: TrainingPlan, athlete_id: str) -> List[Exercise]:
+    """Упражнения, назначенные спортсмену (для всех или в assigned_athlete_ids)."""
+    return [ex for ex in iter_exercises(plan) if ex.visible_to_athlete(athlete_id)]
+
 
 def _enum_from_value(enum_cls, value, default):
     if value is None:

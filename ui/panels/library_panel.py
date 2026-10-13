@@ -1,89 +1,28 @@
-"""Левая панель: библиотека компонентов для текущего уровня."""
+"""Левая панель: библиотека компонентов и пользовательские коллекции."""
 from __future__ import annotations
 
 import json
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from PyQt6.QtCore import Qt, QMimeData, pyqtSignal
-from PyQt6.QtGui import QColor, QDrag, QFont
+from PyQt6.QtGui import QDrag, QFont
 from PyQt6.QtWidgets import (
-    QFileDialog, QFrame, QHBoxLayout, QLabel, QLineEdit, QListWidget,
-    QListWidgetItem, QMessageBox, QPushButton, QTabWidget, QVBoxLayout,
+    QAbstractItemView, QFileDialog, QFrame, QHBoxLayout, QInputDialog, QLabel,
+    QLineEdit, QListWidget, QListWidgetItem, QMenu, QMessageBox, QPushButton,
+    QTabWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
 )
 
 from core import library_store
-from core.models import (
-    CycleType, Exercise, ExerciseType, HierarchyLevel, LEVEL_ITEM_NAMES,
-    LEVEL_NAMES, element_type_key, level_of, make_element,
-)
+from core.models import HierarchyLevel, LEVEL_ITEM_NAMES, LEVEL_NAMES, make_element
+
+MIME_TEMPLATE = "application/x-training-template"
 
 
-def _entry_from_element(el) -> Dict:
-    return {
-        "title": el.title,
-        "type": element_type_key(el),
-        "level": level_of(el).value,
-        "payload": el.to_dict(),
-    }
+def _preset_entries(_level: HierarchyLevel) -> List[Dict]:
+    return []
 
 
-def _exercise(title: str, etype: ExerciseType, **kw) -> Exercise:
-    ex = Exercise(title=title, exercise_type=etype)
-    for k, v in kw.items():
-        setattr(ex, k, v)
-    return ex
-
-
-def _preset_entries(level: HierarchyLevel) -> List[Dict]:
-    """Базовые пресеты по уровням."""
-    if level == HierarchyLevel.EXERCISE:
-        items = [
-            _exercise("Лёгкий кросс", ExerciseType.ENDURANCE, duration_minutes=40,
-                      volume_km=8, intensity_percent=65, hr_zone="Z2"),
-            _exercise("Темповой бег", ExerciseType.TEMPO, duration_minutes=30,
-                      volume_km=6, intensity_percent=85, hr_zone="Z3-Z4"),
-            _exercise("Интервалы", ExerciseType.SPEED, duration_minutes=25,
-                      intensity_percent=92, sets=6, reps=1, rest_seconds=120),
-            _exercise("Присед со штангой", ExerciseType.STRENGTH, weight_kg=80,
-                      sets=4, reps=8, rest_seconds=120),
-            _exercise("Растяжка", ExerciseType.RECOVERY, duration_minutes=15),
-        ]
-    elif level == HierarchyLevel.WORKOUT:
-        items = [
-            make_element(level, "Утренняя пробежка"),
-            make_element(level, "Силовая тренировка"),
-            make_element(level, "Интервальная"),
-            make_element(level, "Восстановительная"),
-        ]
-        items[1].workout_type = ExerciseType.STRENGTH
-        items[3].workout_type = ExerciseType.RECOVERY
-    elif level == HierarchyLevel.MICROCYCLE:
-        items = []
-        for title, ct in [("Втягивающая неделя", CycleType.INTRO),
-                          ("Базовая неделя", CycleType.BASE),
-                          ("Ударная неделя", CycleType.CONTROL),
-                          ("Восстановительная неделя", CycleType.RECOVERY)]:
-            el = make_element(level, title)
-            el.cycle_type = ct
-            items.append(el)
-    elif level == HierarchyLevel.MESOCYCLE:
-        items = []
-        for title, ct in [("Подготовительный", CycleType.BASE),
-                          ("Предсоревновательный", CycleType.CONTROL),
-                          ("Соревновательный", CycleType.COMPETITION)]:
-            el = make_element(level, title)
-            el.cycle_type = ct
-            items.append(el)
-    elif level == HierarchyLevel.MACROCYCLE:
-        items = [make_element(level, "Подготовительный этап"),
-                 make_element(level, "Соревновательный этап"),
-                 make_element(level, "Переходный этап")]
-    else:
-        items = [make_element(level, "Годичный план")]
-    return [_entry_from_element(el) for el in items]
-
-
-class _DragList(QListWidget):
+class _PresetList(QListWidget):
     def startDrag(self, actions):
         item = self.currentItem()
         if item is None:
@@ -98,8 +37,112 @@ class _DragList(QListWidget):
         drag.exec(Qt.DropAction.CopyAction)
 
 
+class _CollectionTree(QTreeWidget):
+    ROLE_KIND = Qt.ItemDataRole.UserRole
+    ROLE_COL_ID = Qt.ItemDataRole.UserRole + 1
+    ROLE_ENTRY_ID = Qt.ItemDataRole.UserRole + 2
+    ROLE_ENTRY = Qt.ItemDataRole.UserRole + 3
+
+    def __init__(self, panel: "LibraryPanel"):
+        super().__init__()
+        self._panel = panel
+        self.setHeaderHidden(True)
+        self.setDragEnabled(True)
+        self.setAcceptDrops(True)
+        self.setDropIndicatorShown(True)
+        self.setDragDropMode(QAbstractItemView.DragDropMode.DragDrop)
+        self.setDefaultDropAction(Qt.DropAction.MoveAction)
+        self.setDragDropOverwriteMode(False)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.setAnimated(True)
+        self.setIndentation(16)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.customContextMenuRequested.connect(self._context_menu)
+
+    def _context_menu(self, pos) -> None:
+        item = self.itemAt(pos)
+        menu = QMenu(self)
+        if item is None:
+            act = menu.addAction("Новая коллекция…")
+            act.triggered.connect(self._panel._create_collection)
+        elif item.parent() is None:
+            menu.addAction("Переименовать…", lambda: self._panel._rename_collection(item))
+            menu.addAction("Удалить коллекцию", lambda: self._panel._delete_collection(item))
+        else:
+            menu.addAction("Удалить шаблон", lambda: self._panel._delete_entry(item))
+        menu.exec(self.viewport().mapToGlobal(pos))
+
+    def startDrag(self, supportedActions):
+        item = self.currentItem()
+        if item is None or item.parent() is None:
+            return
+        payload = self._template_payload(item)
+        if payload is None:
+            return
+        mime = QMimeData()
+        mime.setText(json.dumps(payload, ensure_ascii=False))
+        mime.setData(MIME_TEMPLATE, json.dumps(payload, ensure_ascii=False).encode("utf-8"))
+        drag = QDrag(self)
+        drag.setMimeData(mime)
+        drag.exec(Qt.DropAction.CopyAction | Qt.DropAction.MoveAction)
+
+    def dropEvent(self, event):
+        if event.source() is not self:
+            event.ignore()
+            return
+        dst = self.itemAt(event.position().toPoint())
+        dragged = self.currentItem()
+        if dragged is None or dragged.parent() is None:
+            event.ignore()
+            return
+
+        src_col = dragged.parent().data(0, self.ROLE_COL_ID)
+        entry_id = dragged.data(0, self.ROLE_ENTRY_ID)
+        from_index = dragged.parent().indexOfChild(dragged)
+
+        if dst is None:
+            event.ignore()
+            return
+
+        if dst.parent() is None:
+            to_col = dst.data(0, self.ROLE_COL_ID)
+            to_index = dst.childCount()
+        else:
+            to_col = dst.parent().data(0, self.ROLE_COL_ID)
+            to_index = dst.parent().indexOfChild(dst)
+            if self.dropIndicatorPosition() in (
+                    QAbstractItemView.DropIndicatorPosition.OnItem,
+                    QAbstractItemView.DropIndicatorPosition.BelowItem):
+                to_index += 1
+
+        if src_col == to_col and from_index < to_index:
+            to_index -= 1
+
+        if library_store.move_entry(src_col, entry_id, to_col, to_index):
+            self._panel.refresh_personal()
+        event.acceptProposedAction()
+
+    def dragMoveEvent(self, event):
+        if event.source() is self:
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    @staticmethod
+    def _template_payload(item: QTreeWidgetItem) -> Optional[Dict]:
+        entry = item.data(0, _CollectionTree.ROLE_ENTRY)
+        if not entry:
+            return None
+        return {
+            "kind": "template",
+            "level": entry["level"],
+            "title": entry.get("title", ""),
+            "entry": entry,
+        }
+
+
 class LibraryPanel(QFrame):
-    request_add = pyqtSignal(object)   # элемент для добавления на полотно
+    request_add = pyqtSignal(object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -126,9 +169,11 @@ class LibraryPanel(QFrame):
 
         self.tabs = QTabWidget()
         self.tabs.setDocumentMode(True)
-        self.tab_my = self._make_list()
-        self.tab_presets = self._make_list()
-        self.tabs.addTab(self.tab_my, "Мои")
+        self.tree = _CollectionTree(self)
+        self.tree.itemDoubleClicked.connect(self._on_tree_double_click)
+        self.tab_presets = _PresetList()
+        self.tab_presets.itemDoubleClicked.connect(self._on_preset_double_click)
+        self.tabs.addTab(self.tree, "Мои коллекции")
         self.tabs.addTab(self.tab_presets, "Пресеты")
         root.addWidget(self.tabs, 1)
 
@@ -137,11 +182,13 @@ class LibraryPanel(QFrame):
         self.btn_add_empty.clicked.connect(self._add_empty)
         root.addWidget(self.btn_add_empty)
 
+        self.btn_new_collection = QPushButton("＋  Новая коллекция")
+        self.btn_new_collection.clicked.connect(self._create_collection)
+        root.addWidget(self.btn_new_collection)
+
         row = QHBoxLayout()
-        self.btn_export = QPushButton("Экспорт шаблонов")
-        self.btn_import = QPushButton("Импорт шаблонов")
-        self.btn_export.setToolTip("Сохранить элементы библиотеки в JSON")
-        self.btn_import.setToolTip("Загрузить шаблоны упражнений из JSON (не .tplan)")
+        self.btn_export = QPushButton("Экспорт")
+        self.btn_import = QPushButton("Импорт")
         self.btn_export.clicked.connect(self._export)
         self.btn_import.clicked.connect(self._import)
         row.addWidget(self.btn_export)
@@ -150,15 +197,6 @@ class LibraryPanel(QFrame):
 
         self.set_level(self.level)
 
-    def _make_list(self) -> _DragList:
-        lst = _DragList()
-        lst.setDragEnabled(True)
-        lst.setDragDropMode(QListWidget.DragDropMode.DragOnly)
-        lst.setSelectionMode(QListWidget.SelectionMode.SingleSelection)
-        lst.itemDoubleClicked.connect(self._on_double_click)
-        return lst
-
-    # ──────────────────────────────────────────────────────────────────
     def set_level(self, level: HierarchyLevel) -> None:
         self.level = level
         self.level_badge.setText(f"Уровень: {LEVEL_NAMES.get(level, '')}")
@@ -167,19 +205,46 @@ class LibraryPanel(QFrame):
         self._reload()
 
     def refresh_personal(self) -> None:
-        self._fill(self.tab_my, library_store.entries_for_level(self.level), my=True)
+        self.tree.clear()
+        cols = library_store.list_collections()
+        if not cols:
+            placeholder = QTreeWidgetItem(["Создайте коллекцию для шаблонов"])
+            placeholder.setFlags(Qt.ItemFlag.NoItemFlags)
+            self.tree.addTopLevelItem(placeholder)
+            return
+        for col in cols:
+            entries = [e for e in col.get("entries", [])
+                       if e.get("level") == self.level.value]
+            head = QTreeWidgetItem([col["title"]])
+            head.setData(0, _CollectionTree.ROLE_KIND, "collection")
+            head.setData(0, _CollectionTree.ROLE_COL_ID, col["id"])
+            head.setFont(0, QFont("Segoe UI", 11, QFont.Weight.Bold))
+            head.setExpanded(True)
+            head.setFlags(head.flags() | Qt.ItemFlag.ItemIsDropEnabled)
+            self.tree.addTopLevelItem(head)
+            for entry in entries:
+                child = QTreeWidgetItem([entry.get("title", "Без названия")])
+                child.setData(0, _CollectionTree.ROLE_KIND, "entry")
+                child.setData(0, _CollectionTree.ROLE_COL_ID, col["id"])
+                child.setData(0, _CollectionTree.ROLE_ENTRY_ID, entry.get("id"))
+                child.setData(0, _CollectionTree.ROLE_ENTRY, entry)
+                child.setFont(0, QFont("Segoe UI", 10))
+                child.setFlags(
+                    child.flags()
+                    | Qt.ItemFlag.ItemIsDragEnabled
+                    | Qt.ItemFlag.ItemIsDropEnabled)
+                head.addChild(child)
 
     def _reload(self) -> None:
-        self._fill(self.tab_presets, _preset_entries(self.level), my=False)
+        self._fill_presets(_preset_entries(self.level))
         self.refresh_personal()
 
-    def _fill(self, lst: _DragList, entries: List[Dict], my: bool) -> None:
-        lst.clear()
+    def _fill_presets(self, entries: List[Dict]) -> None:
+        self.tab_presets.clear()
         if not entries:
-            placeholder = QListWidgetItem(
-                "Пусто — сохраните элемент кнопкой ★" if my else "Нет пресетов")
+            placeholder = QListWidgetItem("Пресеты отключены")
             placeholder.setFlags(Qt.ItemFlag.NoItemFlags)
-            lst.addItem(placeholder)
+            self.tab_presets.addItem(placeholder)
             return
         for entry in entries:
             data = {"kind": "template", "level": entry["level"],
@@ -187,27 +252,70 @@ class LibraryPanel(QFrame):
             item = QListWidgetItem(entry.get("title", "Без названия"))
             item.setFont(QFont("Segoe UI", 11))
             item.setData(Qt.ItemDataRole.UserRole, data)
-            lst.addItem(item)
+            self.tab_presets.addItem(item)
 
     def _filter(self, text: str) -> None:
-        lst = self.tabs.currentWidget()
-        if not isinstance(lst, QListWidget):
-            return
         text = text.lower()
-        for i in range(lst.count()):
-            it = lst.item(i)
-            it.setHidden(text not in it.text().lower())
+        widget = self.tabs.currentWidget()
+        if widget is self.tree:
+            for i in range(self.tree.topLevelItemCount()):
+                head = self.tree.topLevelItem(i)
+                any_visible = False
+                for j in range(head.childCount()):
+                    child = head.child(j)
+                    vis = text in child.text(0).lower() or text in head.text(0).lower()
+                    child.setHidden(not vis)
+                    any_visible = any_visible or vis
+                head.setHidden(not any_visible and text not in head.text(0).lower())
+        elif isinstance(widget, QListWidget):
+            for i in range(widget.count()):
+                it = widget.item(i)
+                it.setHidden(text not in it.text().lower())
 
-    # ──────────────────────────────────────────────────────────────────
-    def _on_double_click(self, item: QListWidgetItem) -> None:
-        data = item.data(Qt.ItemDataRole.UserRole)
-        if not data:
+    def _on_tree_double_click(self, item: QTreeWidgetItem, _col: int) -> None:
+        if item.parent() is None:
+            item.setExpanded(not item.isExpanded())
             return
-        element = library_store.build_element(data["entry"])
-        self.request_add.emit(element)
+        payload = _CollectionTree._template_payload(item)
+        if payload:
+            self.request_add.emit(library_store.build_element(payload["entry"]))
+
+    def _on_preset_double_click(self, item: QListWidgetItem) -> None:
+        data = item.data(Qt.ItemDataRole.UserRole)
+        if data:
+            self.request_add.emit(library_store.build_element(data["entry"]))
 
     def _add_empty(self) -> None:
         self.request_add.emit(make_element(self.level))
+
+    def _create_collection(self) -> None:
+        name, ok = QInputDialog.getText(self, "Новая коллекция", "Название:")
+        if ok and name.strip():
+            library_store.create_collection(name.strip())
+            self.refresh_personal()
+
+    def _rename_collection(self, item: QTreeWidgetItem) -> None:
+        cid = item.data(0, _CollectionTree.ROLE_COL_ID)
+        name, ok = QInputDialog.getText(self, "Переименовать", "Название:", text=item.text(0))
+        if ok and name.strip():
+            library_store.rename_collection(cid, name.strip())
+            self.refresh_personal()
+
+    def _delete_collection(self, item: QTreeWidgetItem) -> None:
+        cid = item.data(0, _CollectionTree.ROLE_COL_ID)
+        if QMessageBox.question(
+                self, "Удалить коллекцию",
+                f"Удалить «{item.text(0)}» и все шаблоны внутри?",
+        ) != QMessageBox.StandardButton.Yes:
+            return
+        library_store.delete_collection(cid)
+        self.refresh_personal()
+
+    def _delete_entry(self, item: QTreeWidgetItem) -> None:
+        cid = item.data(0, _CollectionTree.ROLE_COL_ID)
+        eid = item.data(0, _CollectionTree.ROLE_ENTRY_ID)
+        library_store.remove_entry(cid, eid)
+        self.refresh_personal()
 
     def _export(self) -> None:
         path, _ = QFileDialog.getSaveFileName(
@@ -222,7 +330,6 @@ class LibraryPanel(QFrame):
             try:
                 count = library_store.import_library(path)
                 self.refresh_personal()
-                QMessageBox.information(self, "Импорт",
-                                        f"Добавлено шаблонов: {count}")
+                QMessageBox.information(self, "Импорт", f"Добавлено шаблонов: {count}")
             except Exception as exc:  # noqa: BLE001
                 QMessageBox.warning(self, "Ошибка", f"Не удалось импортировать: {exc}")
